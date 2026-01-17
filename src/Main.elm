@@ -64,7 +64,7 @@ type alias Model =
 
 shadeLevels : List Int
 shadeLevels =
-    [ 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 ]
+    [ 0, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950 ]
 
 
 emptyScale : String -> ColorScale
@@ -84,6 +84,7 @@ initialModel =
     , step = PickBase
     , workingColor = { lightness = 0.6, chroma = 0.15, hue = 210 }
     , shadeEditor = Nothing
+    , highlightedColors = []
     }
 
 
@@ -119,6 +120,8 @@ type Msg
     | SetEditorChroma Float
     | SetEditorHue Float
     | SaveShadeEdit
+    | HighlightColors (List String)
+    | ClearHighlight
     | NoOp
 
 
@@ -375,6 +378,12 @@ update msg model =
                 Nothing ->
                     ( model, Cmd.none )
 
+        HighlightColors colors ->
+            ( { model | highlightedColors = colors }, Cmd.none )
+
+        ClearHighlight ->
+            ( { model | highlightedColors = [] }, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -469,7 +478,11 @@ generateFullScale base =
 
         -- Map shade level to target lightness, scaled relative to base
         lightnessFor level =
-            if level == 500 then
+            if level == 0 then
+                -- Pure white
+                1.0
+
+            else if level == 500 then
                 base.lightness
 
             else if level < 500 then
@@ -500,16 +513,21 @@ generateFullScale base =
 
         -- Chroma curve: lower at extremes, peaks around base
         chromaFor level =
-            let
-                -- Normalize level to 0-1 range (50 -> 0, 950 -> 1)
-                t =
-                    (toFloat level - 50) / 900
+            if level == 0 then
+                -- Pure white has no chroma
+                0
 
-                -- Bell curve peaking at ~0.5 (around 500)
-                curve =
-                    1 - (2 * t - 1) ^ 2
-            in
-            base.chroma * (0.3 + 0.7 * curve)
+            else
+                let
+                    -- Normalize level to 0-1 range (50 -> 0, 950 -> 1)
+                    t =
+                        (toFloat level - 50) / 900
+
+                    -- Bell curve peaking at ~0.5 (around 500)
+                    curve =
+                        1 - (2 * t - 1) ^ 2
+                in
+                base.chroma * (0.3 + 0.7 * curve)
 
         makeShade level =
             ( level
@@ -847,20 +865,20 @@ viewLivePreview model =
                     -1
     in
     div [ class "live-preview" ]
-        (List.map (viewCompactScale activeLevel (model.step == Done)) previewScales)
+        (List.map (viewCompactScale activeLevel (model.step == Done) model.highlightedColors) previewScales)
 
 
-viewCompactScale : Int -> Bool -> ( String, List ( Int, Oklch ) ) -> Html Msg
-viewCompactScale activeLevel canEdit ( name, shades ) =
+viewCompactScale : Int -> Bool -> List String -> ( String, List ( Int, Oklch ) ) -> Html Msg
+viewCompactScale activeLevel canEdit highlightedColors ( name, shades ) =
     div [ class "compact-scale" ]
         [ span [ class "compact-scale-name" ] [ text name ]
         , div [ class "compact-shades" ]
-            (List.map (viewCompactShade name shades activeLevel canEdit) (List.map Tuple.first shades |> List.sort))
+            (List.map (viewCompactShade name shades activeLevel canEdit highlightedColors) (List.map Tuple.first shades |> List.sort))
         ]
 
 
-viewCompactShade : String -> List ( Int, Oklch ) -> Int -> Bool -> Int -> Html Msg
-viewCompactShade scaleName shades activeLevel canEdit level =
+viewCompactShade : String -> List ( Int, Oklch ) -> Int -> Bool -> List String -> Int -> Html Msg
+viewCompactShade scaleName shades activeLevel canEdit highlightedColors level =
     let
         maybeOklch =
             List.filter (\( l, _ ) -> l == level) shades
@@ -872,11 +890,18 @@ viewCompactShade scaleName shades activeLevel canEdit level =
     in
     case maybeOklch of
         Just oklch ->
+            let
+                hexColor =
+                    oklchToHex oklch
+
+                isHighlighted =
+                    List.member hexColor highlightedColors
+            in
             div
-                [ class ("compact-shade" ++ activeClass isActive ++ (if canEdit then " clickable" else ""))
-                , style "background-color" (oklchToHex oklch)
+                [ class ("compact-shade" ++ activeClass isActive ++ (if canEdit then " clickable" else "") ++ (if isHighlighted then " highlighted" else ""))
+                , style "background-color" hexColor
                 , if canEdit then onClick (OpenShadeEditor scaleName level oklch) else class ""
-                , title (String.fromInt level ++ ": " ++ oklchToHex oklch)
+                , title (String.fromInt level ++ ": " ++ hexColor)
                 ]
                 []
 
@@ -978,50 +1003,69 @@ viewChatPreview model =
     let
         colors =
             getPreviewColors model
+
+        clickable colorList attrs children =
+            div ([ class "preview-clickable", stopPropagationOn "click" (Decode.succeed ( HighlightColors colorList, True )) ] ++ attrs) children
     in
-    div [ class "chat-preview" ]
+    div [ class "chat-preview", onClick ClearHighlight ]
         [ div
             [ class "chat-sidebar"
             , style "background-color" colors.primary800
+            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary800 ], True ))
             ]
-            [ div [ class "chat-workspace" ]
-                [ span [ style "color" colors.white ] [ text "Workspace" ]
+            [ clickable [ colors.primary800, colors.gray0 ]
+                [ class "chat-workspace" ]
+                [ span [ style "color" colors.gray0 ] [ text "Workspace" ]
                 , div [ class "chat-user" ]
-                    [ span [ class "status-dot", style "background-color" colors.success500 ] []
+                    [ span [ class "status-dot preview-clickable", style "background-color" colors.success500, stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.success500 ], True )) ] []
                     , span [ style "color" colors.primary200 ] [ text "You" ]
                     ]
                 ]
             , div [ class "chat-nav" ]
-                [ div [ class "chat-nav-item", style "color" colors.primary100 ] [ text "Inbox" ]
-                , div [ class "chat-nav-item", style "color" colors.primary100 ] [ text "Starred" ]
+                [ clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-nav-item", style "color" colors.primary100 ]
+                    [ text "Inbox" ]
+                , clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-nav-item", style "color" colors.primary100 ]
+                    [ text "Starred" ]
                 ]
-            , div [ class "chat-channels-label", style "color" colors.primary300 ] [ text "CHANNELS" ]
+            , clickable [ colors.primary800, colors.primary300 ]
+                [ class "chat-channels-label", style "color" colors.primary300 ]
+                [ text "CHANNELS" ]
             , div [ class "chat-channels" ]
-                [ div
+                [ clickable [ colors.primary900, colors.gray0 ]
                     [ class "chat-channel selected"
                     , style "background-color" colors.primary900
-                    , style "color" colors.white
+                    , style "color" colors.gray0
                     ]
                     [ text "# design" ]
-                , div
+                , clickable [ colors.primary800, colors.primary100 ]
                     [ class "chat-channel"
                     , style "color" colors.primary100
                     ]
                     [ text "# engineering"
                     , span
-                        [ class "unread-badge"
+                        [ class "unread-badge preview-clickable"
                         , style "background-color" colors.danger500
-                        , style "color" colors.white
+                        , style "color" colors.gray0
+                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.danger500, colors.gray0 ], True ))
                         ]
                         [ text "4" ]
                     ]
-                , div [ class "chat-channel", style "color" colors.primary100 ] [ text "# marketing" ]
+                , clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-channel", style "color" colors.primary100 ]
+                    [ text "# marketing" ]
                 ]
             ]
-        , div [ class "chat-main", style "background-color" colors.white ]
-            [ div [ class "chat-header", style "border-color" colors.gray200 ]
+        , div
+            [ class "chat-main"
+            , style "background-color" colors.gray0
+            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.gray0 ], True ))
+            ]
+            [ clickable [ colors.gray0, colors.gray900 ]
+                [ class "chat-header", style "border-color" colors.gray200 ]
                 [ span [ style "color" colors.gray900 ] [ text "# design" ] ]
-            , div
+            , clickable [ colors.warning100, colors.warning700 ]
                 [ class "chat-alert"
                 , style "background-color" colors.warning100
                 , style "border-color" colors.warning200
@@ -1033,7 +1077,8 @@ viewChatPreview model =
                     ]
                 ]
             , div [ class "chat-messages" ]
-                [ div [ class "chat-message" ]
+                [ clickable [ colors.gray0, colors.gray700 ]
+                    [ class "chat-message" ]
                     [ div [ class "message-avatar", style "background-color" colors.primary400 ] []
                     , div [ class "message-content" ]
                         [ div [ class "message-header" ]
@@ -1044,7 +1089,8 @@ viewChatPreview model =
                             [ text "No problem! I'll upload the notes shortly." ]
                         ]
                     ]
-                , div [ class "chat-message" ]
+                , clickable [ colors.gray0, colors.gray700 ]
+                    [ class "chat-message" ]
                     [ div [ class "message-avatar", style "background-color" colors.gray400 ] []
                     , div [ class "message-content" ]
                         [ div [ class "message-header" ]
@@ -1052,13 +1098,19 @@ viewChatPreview model =
                             , span [ class "message-time", style "color" colors.gray400 ] [ text "12:51 PM" ]
                             ]
                         , div [ class "message-text", style "color" colors.gray700 ]
-                            [ span [ style "color" colors.primary500 ] [ text "@sarah " ]
+                            [ span
+                                [ style "color" colors.primary500
+                                , class "preview-clickable"
+                                , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary500 ], True ))
+                                ]
+                                [ text "@sarah " ]
                             , text "I put the photos in the shared folder."
                             ]
                         ]
                     ]
                 ]
-            , div [ class "chat-input", style "background-color" colors.gray50, style "border-color" colors.gray200 ]
+            , clickable [ colors.gray50, colors.gray400 ]
+                [ class "chat-input", style "background-color" colors.gray50, style "border-color" colors.gray200 ]
                 [ span [ style "color" colors.gray400 ] [ text "Type your message..." ] ]
             ]
         ]
@@ -1073,6 +1125,7 @@ type alias PreviewColors =
     , primary700 : String
     , primary800 : String
     , primary900 : String
+    , gray0 : String
     , gray50 : String
     , gray100 : String
     , gray200 : String
@@ -1086,7 +1139,6 @@ type alias PreviewColors =
     , warning200 : String
     , warning700 : String
     , success500 : String
-    , white : String
     }
 
 
@@ -1165,6 +1217,7 @@ getPreviewColors model =
     , primary700 = getColor scales.primary 700 "#1d4ed8"
     , primary800 = getColor scales.primary 800 "#1e40af"
     , primary900 = getColor scales.primary 900 "#1e3a8a"
+    , gray0 = getColor scales.gray 0 "#ffffff"
     , gray50 = getColor scales.gray 50 "#f9fafb"
     , gray100 = getColor scales.gray 100 "#f3f4f6"
     , gray200 = getColor scales.gray 200 "#e5e7eb"
@@ -1178,7 +1231,6 @@ getPreviewColors model =
     , warning200 = getColor scales.warning 200 "#fde68a"
     , warning700 = getColor scales.warning 700 "#b45309"
     , success500 = getColor scales.success 500 "#22c55e"
-    , white = "#ffffff"
     }
 
 
