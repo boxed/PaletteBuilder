@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palette Builder</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            line-height: 1.6;
+        }
+
+        .app {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 0.15rem;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .subtitle a {
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .subtitle a:hover {
+            text-decoration: underline;
+        }
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .top-row {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .picker-panel {
+            flex-shrink: 0;
+            width: 320px;
+        }
+
+        .palette-panel {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .previews-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .previews-row .preview-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Scale Selector (legacy, keeping for reference) */
+        .scale-selector {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: none;
+        }
+
+        .scale-selector h3 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .scale-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .scale-tab {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #f1f5f9;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .scale-tab:hover {
+            background: #e2e8f0;
+        }
+
+        .scale-tab.active {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+
+        .scale-name-input {
+            border: none;
+            background: transparent;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #334155;
+            width: 80px;
+            padding: 0;
+        }
+
+        .scale-name-input:focus {
+            outline: none;
+        }
+
+        .shade-count {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .remove-scale-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1rem;
+            cursor: pointer;
+            padding: 0 0.25rem;
+            line-height: 1;
+        }
+
+        .remove-scale-btn:hover {
+            color: #ef4444;
+        }
+
+        .add-scale-btn {
+            padding: 0.5rem 0.75rem;
+            background: transparent;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .add-scale-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        /* Workflow Section */
+        .workflow {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .workflow.done {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .workflow.done h2 {
+            color: #059669;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .workflow.done p {
+            color: #64748b;
+            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .step-header h2 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .step-hint {
+            color: #64748b;
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+            padding: 0.4rem 0.6rem;
+            background: #f8fafc;
+            border-radius: 4px;
+            border-left: 2px solid #3b82f6;
+        }
+
+        /* Color Picker */
+        .color-picker-section {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .color-preview-large {
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+        }
+
+        .preview-hex {
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            text-transform: uppercase;
+        }
+
+        .sliders {
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .slider-row {
+            display: grid;
+            gap: 0.25rem;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #475569;
+        }
+
+        .slider-value {
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: #64748b;
+        }
+
+        .slider-track {
+            height: 20px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .slider-input {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid #0f172a;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-input::-webkit-slider-thumb:active {
+            cursor: grabbing;
+        }
+
+        .slider-input::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border: 2px solid #0f172a;
+            border-radius: 50%;
+            cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .confirm-btn, .reset-btn {
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s;
+            width: 100%;
+        }
+
+        .confirm-btn:hover, .reset-btn:hover {
+            background: #2563eb;
+        }
+
+        .reset-btn {
+            background: #64748b;
+        }
+
+        .reset-btn:hover {
+            background: #475569;
+        }
+
+        /* Live Preview */
+        .live-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .palette-scales {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .snake-case-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .snake-case-toggle input {
+            cursor: pointer;
+        }
+
+        .compact-scale {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .compact-scale-name {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            width: 60px;
+            flex-shrink: 0;
+            text-transform: lowercase;
+        }
+
+        .compact-shades {
+            display: flex;
+            gap: 2px;
+            flex: 1;
+        }
+
+        .compact-shade {
+            flex: 1;
+            height: 32px;
+            border-radius: 4px;
+            transition: transform 0.1s;
+        }
+
+        .compact-shade.clickable:hover {
+            transform: scaleY(1.2);
+            z-index: 10;
+        }
+
+        .compact-shade.active {
+            outline: 2px solid #0f172a;
+            outline-offset: 1px;
+            z-index: 10;
+        }
+
+        .compact-shade.highlighted {
+            outline: 3px solid #f59e0b;
+            outline-offset: 2px;
+            z-index: 20;
+            transform: scaleY(1.4);
+        }
+
+        /* Shade Editor Popup */
+        .shade-editor-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .shade-editor-popup {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            width: 280px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .popup-close {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .popup-close:hover {
+            color: #64748b;
+        }
+
+        .popup-preview {
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .popup-sliders {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .popup-slider-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .popup-slider-label {
+            width: 16px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+        }
+
+        .popup-slider {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: #e2e8f0;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .popup-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border: 2px solid #3b82f6;
+            border-radius: 50%;
+            cursor: grab;
+        }
+
+        .popup-slider-value {
+            width: 36px;
+            font-size: 0.7rem;
+            font-family: 'SF Mono', monospace;
+            color: #64748b;
+            text-align: right;
+        }
+
+        .popup-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .popup-cancel, .popup-save {
+            flex: 1;
+            padding: 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+        }
+
+        .popup-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .popup-cancel:hover {
+            background: #e2e8f0;
+        }
+
+        .popup-save {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .popup-save:hover {
+            background: #2563eb;
+        }
+
+        .preview-section {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .preview-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #374151;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Chat Preview */
+        .chat-preview {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            margin-top: 0;
+            height: 380px;
+            font-size: 11px;
+        }
+
+        .chat-preview.dark {
+            background: #111827;
+        }
+
+        .chat-sidebar {
+            width: 120px;
+            flex-shrink: 0;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .chat-workspace {
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .chat-workspace > span {
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .chat-user {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0.25rem;
+            font-size: 11px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .chat-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .chat-nav-item {
+            padding: 0.2rem 0.4rem;
+            font-size: 11px;
+        }
+
+        .chat-channels-label {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.25rem;
+        }
+
+        .chat-channels {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .chat-channel {
+            padding: 0.25rem 0.4rem;
+            border-radius: 4px;
+            font-size: 11px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .unread-badge {
+            font-size: 9px;
+            padding: 1px 5px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .chat-header {
+            padding: 0.5rem 0.75rem;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+        }
+
+        .chat-alerts {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .chat-alert {
+            padding: 0.35rem 0.5rem;
+            border-radius: 4px;
+            border-width: 1px;
+            border-style: solid;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 10px;
+        }
+
+        .alert-icon {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 0.5rem;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .message-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: baseline;
+            gap: 0.4rem;
+        }
+
+        .message-author {
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .message-time {
+            font-size: 10px;
+        }
+
+        .message-text {
+            font-size: 11px;
+            line-height: 1.4;
+            margin-top: 0.1rem;
+        }
+
+        .chat-input {
+            margin: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            border-width: 1px;
+            border-style: solid;
+            font-size: 11px;
+        }
+
+        /* Button Preview */
+        .button-preview {
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .button-row {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .preview-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .preview-btn:hover {
+            opacity: 0.9;
+        }
+
+        .preview-clickable {
+            cursor: pointer;
+            transition: opacity 0.1s;
+        }
+
+        .preview-clickable:hover {
+            opacity: 0.85;
+        }
+
+        /* Export Section */
+        .export-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .export-section h2 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .export-section pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            overflow-x: auto;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            line-height: 1.5;
+            max-height: 500px;
+        }
+
+        @media (max-width: 900px) {
+            .top-row {
+                flex-direction: column;
+            }
+
+            .picker-panel {
+                width: 100%;
+            }
+
+            .previews-row {
+                flex-direction: column;
+            }
+
+            .app {
+                padding: 1rem;
+            }
+
+            .compact-shade {
+                height: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script src="main.js"></script>
+    <script>
+        var app = Elm.Main.init({
+            node: document.getElementById('app')
+        });
+    </script>
+</body>
+</html>

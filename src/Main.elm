@@ -605,10 +605,12 @@ view model =
                 [ div [ class "preview-section" ]
                     [ h3 [ class "preview-label" ] [ text "Light Mode" ]
                     , viewChatPreview model
+                    , viewButtonPreview model False
                     ]
                 , div [ class "preview-section" ]
                     [ h3 [ class "preview-label" ] [ text "Dark Mode" ]
                     , viewChatPreviewDark model
+                    , viewButtonPreview model True
                     ]
                 ]
             ]
@@ -1285,6 +1287,79 @@ viewChatPreviewDark model =
             , clickable [ colors.gray800, colors.gray500 ]
                 [ class "chat-input", style "background-color" colors.gray800, style "border-color" colors.gray700 ]
                 [ span [ style "color" colors.gray500 ] [ text "Type your message..." ] ]
+            ]
+        ]
+
+
+viewButtonPreview : Model -> Bool -> Html Msg
+viewButtonPreview model isDark =
+    let
+        colors =
+            getPreviewColors model
+
+        bgColor =
+            if isDark then
+                colors.gray900
+            else
+                colors.gray0
+
+        secondaryBg =
+            if isDark then
+                colors.gray700
+            else
+                colors.gray100
+
+        secondaryText =
+            if isDark then
+                colors.gray100
+            else
+                colors.gray700
+
+        secondaryBorder =
+            if isDark then
+                colors.gray600
+            else
+                colors.gray300
+    in
+    div
+        [ class "button-preview"
+        , style "background-color" bgColor
+        , style "padding" "1rem"
+        , style "border-radius" "8px"
+        , style "margin-top" "0.5rem"
+        ]
+        [ div [ class "button-row" ]
+            [ button
+                [ class "preview-btn"
+                , style "background-color" colors.primary500
+                , style "color" colors.gray0
+                ]
+                [ text "Primary" ]
+            , button
+                [ class "preview-btn"
+                , style "background-color" secondaryBg
+                , style "color" secondaryText
+                , style "border" ("1px solid " ++ secondaryBorder)
+                ]
+                [ text "Secondary" ]
+            , button
+                [ class "preview-btn"
+                , style "background-color" colors.danger500
+                , style "color" colors.gray0
+                ]
+                [ text "Danger" ]
+            , button
+                [ class "preview-btn"
+                , style "background-color" colors.warning200
+                , style "color" colors.warning800
+                ]
+                [ text "Warning" ]
+            , button
+                [ class "preview-btn"
+                , style "background-color" colors.success500
+                , style "color" colors.gray0
+                ]
+                [ text "Success" ]
             ]
         ]
 
