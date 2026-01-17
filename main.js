@@ -7451,6 +7451,18 @@ var $author$project$Main$viewHeader = A2(
 					_List_fromArray(
 						[
 							$elm$html$Html$text('Refactoring UI')
+						])),
+					$elm$html$Html$text(' | '),
+					A2(
+					$elm$html$Html$a,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$href('https://github.com/boxed/PaletteBuilder'),
+							$elm$html$Html$Attributes$target('_blank')
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('GitHub')
 						]))
 				]))
 		]));

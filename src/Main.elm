@@ -627,6 +627,9 @@ viewHeader =
             [ text "Build your color palette based on "
             , a [ href "https://www.refactoringui.com/previews/building-your-color-palette", target "_blank" ]
                 [ text "Refactoring UI" ]
+            , text " | "
+            , a [ href "https://github.com/boxed/PaletteBuilder", target "_blank" ]
+                [ text "GitHub" ]
             ]
         ]
 
