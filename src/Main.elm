@@ -59,6 +59,7 @@ type alias Model =
     , workingColor : Oklch
     , shadeEditor : Maybe ShadeEditor
     , highlightedColors : List String -- List of hex colors to highlight in palette
+    , useSnakeCase : Bool
     }
 
 
@@ -85,6 +86,7 @@ initialModel =
     , workingColor = { lightness = 0.6, chroma = 0.15, hue = 210 }
     , shadeEditor = Nothing
     , highlightedColors = []
+    , useSnakeCase = False
     }
 
 
@@ -122,6 +124,7 @@ type Msg
     | SaveShadeEdit
     | HighlightColors (List String)
     | ClearHighlight
+    | ToggleSnakeCase
     | NoOp
 
 
@@ -384,6 +387,9 @@ update msg model =
         ClearHighlight ->
             ( { model | highlightedColors = [] }, Cmd.none )
 
+        ToggleSnakeCase ->
+            ( { model | useSnakeCase = not model.useSnakeCase }, Cmd.none )
+
         NoOp ->
             ( model, Cmd.none )
 
@@ -589,13 +595,21 @@ view model =
     div [ class "app" ]
         [ viewHeader
         , div [ class "main-content" ]
-            [ div [ class "left-panel" ]
-                [ viewScaleSelector model
-                , viewWorkflow model
+            [ div [ class "top-row" ]
+                [ div [ class "picker-panel" ]
+                    [ viewWorkflow model ]
+                , div [ class "palette-panel" ]
+                    [ viewLivePreview model ]
                 ]
-            , div [ class "right-panel" ]
-                [ viewLivePreview model
-                , viewChatPreview model
+            , div [ class "previews-row" ]
+                [ div [ class "preview-section" ]
+                    [ h3 [ class "preview-label" ] [ text "Light Mode" ]
+                    , viewChatPreview model
+                    ]
+                , div [ class "preview-section" ]
+                    [ h3 [ class "preview-label" ] [ text "Dark Mode" ]
+                    , viewChatPreviewDark model
+                    ]
                 ]
             ]
         , viewExport model
@@ -865,7 +879,18 @@ viewLivePreview model =
                     -1
     in
     div [ class "live-preview" ]
-        (List.map (viewCompactScale activeLevel (model.step == Done) model.highlightedColors) previewScales)
+        [ div [ class "palette-scales" ]
+            (List.map (viewCompactScale activeLevel (model.step == Done) model.highlightedColors) previewScales)
+        , label [ class "snake-case-toggle" ]
+            [ input
+                [ type_ "checkbox"
+                , checked model.useSnakeCase
+                , onClick ToggleSnakeCase
+                ]
+                []
+            , text "Use snake_case for CSS names"
+            ]
+        ]
 
 
 viewCompactScale : Int -> Bool -> List String -> ( String, List ( Int, Oklch ) ) -> Html Msg
@@ -1065,15 +1090,30 @@ viewChatPreview model =
             [ clickable [ colors.gray0, colors.gray900 ]
                 [ class "chat-header", style "border-color" colors.gray200 ]
                 [ span [ style "color" colors.gray900 ] [ text "# design" ] ]
-            , clickable [ colors.warning100, colors.warning700 ]
-                [ class "chat-alert"
-                , style "background-color" colors.warning100
-                , style "border-color" colors.warning200
-                ]
-                [ div [ class "alert-icon", style "color" colors.warning700 ] [ text "!" ]
-                , div []
-                    [ div [ style "color" colors.warning700 ] [ text "Oops!" ]
-                    , div [ style "color" colors.warning700 ] [ text "Connection problem." ]
+            , div [ class "chat-alerts" ]
+                [ clickable [ colors.danger100, colors.danger700 ]
+                    [ class "chat-alert"
+                    , style "background-color" colors.danger100
+                    , style "border-color" colors.danger200
+                    ]
+                    [ div [ class "alert-icon", style "color" colors.danger700 ] [ text "✕" ]
+                    , div [ style "color" colors.danger700 ] [ text "Upload failed. Please try again." ]
+                    ]
+                , clickable [ colors.warning100, colors.warning700 ]
+                    [ class "chat-alert"
+                    , style "background-color" colors.warning100
+                    , style "border-color" colors.warning200
+                    ]
+                    [ div [ class "alert-icon", style "color" colors.warning700 ] [ text "!" ]
+                    , div [ style "color" colors.warning700 ] [ text "Connection unstable." ]
+                    ]
+                , clickable [ colors.success100, colors.success700 ]
+                    [ class "chat-alert"
+                    , style "background-color" colors.success100
+                    , style "border-color" colors.success200
+                    ]
+                    [ div [ class "alert-icon", style "color" colors.success700 ] [ text "✓" ]
+                    , div [ style "color" colors.success700 ] [ text "Message sent successfully." ]
                     ]
                 ]
             , div [ class "chat-messages" ]
@@ -1116,12 +1156,146 @@ viewChatPreview model =
         ]
 
 
+viewChatPreviewDark : Model -> Html Msg
+viewChatPreviewDark model =
+    let
+        colors =
+            getPreviewColors model
+
+        clickable colorList attrs children =
+            div ([ class "preview-clickable", stopPropagationOn "click" (Decode.succeed ( HighlightColors colorList, True )) ] ++ attrs) children
+    in
+    div [ class "chat-preview dark", onClick ClearHighlight ]
+        [ div
+            [ class "chat-sidebar"
+            , style "background-color" colors.primary800
+            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary800 ], True ))
+            ]
+            [ clickable [ colors.primary800, colors.gray0 ]
+                [ class "chat-workspace" ]
+                [ span [ style "color" colors.gray0 ] [ text "Workspace" ]
+                , div [ class "chat-user" ]
+                    [ span [ class "status-dot preview-clickable", style "background-color" colors.success500, stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.success500 ], True )) ] []
+                    , span [ style "color" colors.primary200 ] [ text "You" ]
+                    ]
+                ]
+            , div [ class "chat-nav" ]
+                [ clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-nav-item", style "color" colors.primary100 ]
+                    [ text "Inbox" ]
+                , clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-nav-item", style "color" colors.primary100 ]
+                    [ text "Starred" ]
+                ]
+            , clickable [ colors.primary800, colors.primary300 ]
+                [ class "chat-channels-label", style "color" colors.primary300 ]
+                [ text "CHANNELS" ]
+            , div [ class "chat-channels" ]
+                [ clickable [ colors.primary900, colors.gray0 ]
+                    [ class "chat-channel selected"
+                    , style "background-color" colors.primary900
+                    , style "color" colors.gray0
+                    ]
+                    [ text "# design" ]
+                , clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-channel"
+                    , style "color" colors.primary100
+                    ]
+                    [ text "# engineering"
+                    , span
+                        [ class "unread-badge preview-clickable"
+                        , style "background-color" colors.danger500
+                        , style "color" colors.gray0
+                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.danger500, colors.gray0 ], True ))
+                        ]
+                        [ text "4" ]
+                    ]
+                , clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-channel", style "color" colors.primary100 ]
+                    [ text "# marketing" ]
+                ]
+            ]
+        , div
+            [ class "chat-main"
+            , style "background-color" colors.gray900
+            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.gray900 ], True ))
+            ]
+            [ clickable [ colors.gray900, colors.gray100 ]
+                [ class "chat-header", style "border-color" colors.gray700 ]
+                [ span [ style "color" colors.gray100 ] [ text "# design" ] ]
+            , div [ class "chat-alerts" ]
+                [ clickable [ colors.danger900, colors.danger200 ]
+                    [ class "chat-alert"
+                    , style "background-color" colors.danger900
+                    , style "border-color" colors.danger800
+                    ]
+                    [ div [ class "alert-icon", style "color" colors.danger200 ] [ text "✕" ]
+                    , div [ style "color" colors.danger200 ] [ text "Upload failed. Please try again." ]
+                    ]
+                , clickable [ colors.warning900, colors.warning200 ]
+                    [ class "chat-alert"
+                    , style "background-color" colors.warning900
+                    , style "border-color" colors.warning800
+                    ]
+                    [ div [ class "alert-icon", style "color" colors.warning200 ] [ text "!" ]
+                    , div [ style "color" colors.warning200 ] [ text "Connection unstable." ]
+                    ]
+                , clickable [ colors.success900, colors.success200 ]
+                    [ class "chat-alert"
+                    , style "background-color" colors.success900
+                    , style "border-color" colors.success800
+                    ]
+                    [ div [ class "alert-icon", style "color" colors.success200 ] [ text "✓" ]
+                    , div [ style "color" colors.success200 ] [ text "Message sent successfully." ]
+                    ]
+                ]
+            , div [ class "chat-messages" ]
+                [ clickable [ colors.gray900, colors.gray300 ]
+                    [ class "chat-message" ]
+                    [ div [ class "message-avatar", style "background-color" colors.primary400 ] []
+                    , div [ class "message-content" ]
+                        [ div [ class "message-header" ]
+                            [ span [ class "message-author", style "color" colors.gray100 ] [ text "Sarah Porter" ]
+                            , span [ class "message-time", style "color" colors.gray500 ] [ text "12:48 PM" ]
+                            ]
+                        , div [ class "message-text", style "color" colors.gray300 ]
+                            [ text "No problem! I'll upload the notes shortly." ]
+                        ]
+                    ]
+                , clickable [ colors.gray900, colors.gray300 ]
+                    [ class "chat-message" ]
+                    [ div [ class "message-avatar", style "background-color" colors.gray600 ] []
+                    , div [ class "message-content" ]
+                        [ div [ class "message-header" ]
+                            [ span [ class "message-author", style "color" colors.gray100 ] [ text "Tiffany Myers" ]
+                            , span [ class "message-time", style "color" colors.gray500 ] [ text "12:51 PM" ]
+                            ]
+                        , div [ class "message-text", style "color" colors.gray300 ]
+                            [ span
+                                [ style "color" colors.primary400
+                                , class "preview-clickable"
+                                , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary400 ], True ))
+                                ]
+                                [ text "@sarah " ]
+                            , text "I put the photos in the shared folder."
+                            ]
+                        ]
+                    ]
+                ]
+            , clickable [ colors.gray800, colors.gray500 ]
+                [ class "chat-input", style "background-color" colors.gray800, style "border-color" colors.gray700 ]
+                [ span [ style "color" colors.gray500 ] [ text "Type your message..." ] ]
+            ]
+        ]
+
+
 type alias PreviewColors =
     { primary100 : String
     , primary200 : String
     , primary300 : String
     , primary400 : String
     , primary500 : String
+    , primary600 : String
     , primary700 : String
     , primary800 : String
     , primary900 : String
@@ -1132,13 +1306,28 @@ type alias PreviewColors =
     , gray300 : String
     , gray400 : String
     , gray500 : String
+    , gray600 : String
     , gray700 : String
+    , gray800 : String
     , gray900 : String
+    , gray950 : String
+    , danger100 : String
+    , danger200 : String
     , danger500 : String
+    , danger700 : String
+    , danger800 : String
+    , danger900 : String
     , warning100 : String
     , warning200 : String
     , warning700 : String
+    , warning800 : String
+    , warning900 : String
+    , success100 : String
+    , success200 : String
     , success500 : String
+    , success700 : String
+    , success800 : String
+    , success900 : String
     }
 
 
@@ -1214,6 +1403,7 @@ getPreviewColors model =
     , primary300 = getColor scales.primary 300 "#93c5fd"
     , primary400 = getColor scales.primary 400 "#60a5fa"
     , primary500 = getColor scales.primary 500 "#3b82f6"
+    , primary600 = getColor scales.primary 600 "#2563eb"
     , primary700 = getColor scales.primary 700 "#1d4ed8"
     , primary800 = getColor scales.primary 800 "#1e40af"
     , primary900 = getColor scales.primary 900 "#1e3a8a"
@@ -1224,13 +1414,28 @@ getPreviewColors model =
     , gray300 = getColor scales.gray 300 "#d1d5db"
     , gray400 = getColor scales.gray 400 "#9ca3af"
     , gray500 = getColor scales.gray 500 "#6b7280"
+    , gray600 = getColor scales.gray 600 "#4b5563"
     , gray700 = getColor scales.gray 700 "#374151"
+    , gray800 = getColor scales.gray 800 "#1f2937"
     , gray900 = getColor scales.gray 900 "#111827"
+    , gray950 = getColor scales.gray 950 "#030712"
+    , danger100 = getColor scales.danger 100 "#fee2e2"
+    , danger200 = getColor scales.danger 200 "#fecaca"
     , danger500 = getColor scales.danger 500 "#ef4444"
+    , danger700 = getColor scales.danger 700 "#b91c1c"
+    , danger800 = getColor scales.danger 800 "#991b1b"
+    , danger900 = getColor scales.danger 900 "#7f1d1d"
     , warning100 = getColor scales.warning 100 "#fef3c7"
     , warning200 = getColor scales.warning 200 "#fde68a"
     , warning700 = getColor scales.warning 700 "#b45309"
+    , warning800 = getColor scales.warning 800 "#92400e"
+    , warning900 = getColor scales.warning 900 "#78350f"
+    , success100 = getColor scales.success 100 "#dcfce7"
+    , success200 = getColor scales.success 200 "#bbf7d0"
     , success500 = getColor scales.success 500 "#22c55e"
+    , success700 = getColor scales.success 700 "#15803d"
+    , success800 = getColor scales.success 800 "#166534"
+    , success900 = getColor scales.success 900 "#14532d"
     }
 
 
@@ -1250,61 +1455,236 @@ getExistingShades name scales =
 viewExport : Model -> Html Msg
 viewExport model =
     let
-        completedScales =
-            List.filter (\s -> List.length s.shades == 11) model.scales
+        colors =
+            getPreviewColors model
     in
-    if List.isEmpty completedScales then
-        text ""
-
-    else
-        div [ class "export-section" ]
-            [ h2 [] [ text "Export" ]
-            , div [ class "export-formats" ]
-                [ div [ class "export-block" ]
-                    [ h4 [] [ text "CSS Variables" ]
-                    , pre [] [ code [] [ text (exportCSS completedScales) ] ]
-                    ]
-                , div [ class "export-block" ]
-                    [ h4 [] [ text "Tailwind Config" ]
-                    , pre [] [ code [] [ text (exportTailwind completedScales) ] ]
-                    ]
-                ]
-            ]
+    div [ class "export-section" ]
+        [ h2 [] [ text "CSS Export" ]
+        , pre [] [ code [] [ text (exportSemanticCSS model.useSnakeCase colors) ] ]
+        ]
 
 
-exportCSS : List ColorScale -> String
-exportCSS scales =
+exportSemanticCSS : Bool -> PreviewColors -> String
+exportSemanticCSS useSnakeCase colors =
     let
-        scaleToCSS scale =
-            List.map
-                (\( level, oklch ) ->
-                    "  --" ++ scale.name ++ "-" ++ String.fromInt level ++ ": " ++ oklchToHex oklch ++ ";"
-                )
-                scale.shades
-                |> String.join "\n"
+        n name =
+            if useSnakeCase then
+                String.replace "-" "_" name
+            else
+                name
+
+        ld light dark =
+            "light-dark(" ++ light ++ ", " ++ dark ++ ")"
     in
-    ":root {\n" ++ (List.map scaleToCSS scales |> String.join "\n\n") ++ "\n}"
-
-
-exportTailwind : List ColorScale -> String
-exportTailwind scales =
-    let
-        scaleToTailwind scale =
-            let
-                shadeLines =
-                    List.map
-                        (\( level, oklch ) ->
-                            "        " ++ String.fromInt level ++ ": '" ++ oklchToHex oklch ++ "',"
-                        )
-                        scale.shades
-                        |> String.join "\n"
-            in
-            "      '" ++ scale.name ++ "': {\n" ++ shadeLines ++ "\n      },"
-    in
-    "module.exports = {\n  theme: {\n    extend: {\n      colors: {\n"
-        ++ (List.map scaleToTailwind scales |> String.join "\n")
-        ++ "\n      }\n    }\n  }\n}"
-
+    ":root {\n  color-scheme: light dark;\n\n  /* Surfaces */\n  --"
+        ++ n "surface"
+        ++ ": "
+        ++ ld colors.gray0 colors.gray900
+        ++ ";\n  --"
+        ++ n "surface-secondary"
+        ++ ": "
+        ++ ld colors.gray50 colors.gray800
+        ++ ";\n  --"
+        ++ n "surface-elevated"
+        ++ ": "
+        ++ ld colors.gray0 colors.gray800
+        ++ ";\n  --"
+        ++ n "surface-sidebar"
+        ++ ": "
+        ++ colors.primary800
+        ++ ";\n  --"
+        ++ n "surface-sidebar-active"
+        ++ ": "
+        ++ colors.primary900
+        ++ ";\n\n  /* Text */\n  --"
+        ++ n "text"
+        ++ ": "
+        ++ ld colors.gray900 colors.gray100
+        ++ ";\n  --"
+        ++ n "text-secondary"
+        ++ ": "
+        ++ ld colors.gray700 colors.gray300
+        ++ ";\n  --"
+        ++ n "text-muted"
+        ++ ": "
+        ++ ld colors.gray400 colors.gray500
+        ++ ";\n  --"
+        ++ n "text-on-primary"
+        ++ ": "
+        ++ colors.gray0
+        ++ ";\n  --"
+        ++ n "text-sidebar"
+        ++ ": "
+        ++ colors.primary100
+        ++ ";\n  --"
+        ++ n "text-sidebar-muted"
+        ++ ": "
+        ++ colors.primary300
+        ++ ";\n\n  /* Borders */\n  --"
+        ++ n "border"
+        ++ ": "
+        ++ ld colors.gray200 colors.gray700
+        ++ ";\n  --"
+        ++ n "border-subtle"
+        ++ ": "
+        ++ ld colors.gray100 colors.gray800
+        ++ ";\n\n  /* Interactive */\n  --"
+        ++ n "link"
+        ++ ": "
+        ++ ld colors.primary500 colors.primary400
+        ++ ";\n  --"
+        ++ n "primary"
+        ++ ": "
+        ++ colors.primary500
+        ++ ";\n  --"
+        ++ n "primary-hover"
+        ++ ": "
+        ++ colors.primary600
+        ++ ";\n\n  /* Status - Warning */\n  --"
+        ++ n "warning-surface"
+        ++ ": "
+        ++ ld colors.warning100 colors.warning900
+        ++ ";\n  --"
+        ++ n "warning-border"
+        ++ ": "
+        ++ ld colors.warning200 colors.warning800
+        ++ ";\n  --"
+        ++ n "warning-text"
+        ++ ": "
+        ++ ld colors.warning700 colors.warning200
+        ++ ";\n\n  /* Status - Danger */\n  --"
+        ++ n "danger"
+        ++ ": "
+        ++ colors.danger500
+        ++ ";\n  --"
+        ++ n "danger-surface"
+        ++ ": "
+        ++ ld colors.danger100 colors.danger900
+        ++ ";\n  --"
+        ++ n "danger-border"
+        ++ ": "
+        ++ ld colors.danger200 colors.danger800
+        ++ ";\n  --"
+        ++ n "danger-text"
+        ++ ": "
+        ++ ld colors.danger700 colors.danger200
+        ++ ";\n\n  /* Status - Success */\n  --"
+        ++ n "success"
+        ++ ": "
+        ++ colors.success500
+        ++ ";\n  --"
+        ++ n "success-surface"
+        ++ ": "
+        ++ ld colors.success100 colors.success900
+        ++ ";\n  --"
+        ++ n "success-border"
+        ++ ": "
+        ++ ld colors.success200 colors.success800
+        ++ ";\n  --"
+        ++ n "success-text"
+        ++ ": "
+        ++ ld colors.success700 colors.success200
+        ++ ";\n}\n\n/* Semantic utility classes */\n."
+        ++ n "bg-surface"
+        ++ " { background-color: var(--"
+        ++ n "surface"
+        ++ "); }\n."
+        ++ n "bg-surface-secondary"
+        ++ " { background-color: var(--"
+        ++ n "surface-secondary"
+        ++ "); }\n."
+        ++ n "bg-surface-elevated"
+        ++ " { background-color: var(--"
+        ++ n "surface-elevated"
+        ++ "); }\n."
+        ++ n "bg-sidebar"
+        ++ " { background-color: var(--"
+        ++ n "surface-sidebar"
+        ++ "); }\n."
+        ++ n "bg-sidebar-active"
+        ++ " { background-color: var(--"
+        ++ n "surface-sidebar-active"
+        ++ "); }\n\n."
+        ++ n "text-primary"
+        ++ " { color: var(--"
+        ++ n "text"
+        ++ "); }\n."
+        ++ n "text-secondary"
+        ++ " { color: var(--"
+        ++ n "text-secondary"
+        ++ "); }\n."
+        ++ n "text-muted"
+        ++ " { color: var(--"
+        ++ n "text-muted"
+        ++ "); }\n."
+        ++ n "text-on-primary"
+        ++ " { color: var(--"
+        ++ n "text-on-primary"
+        ++ "); }\n."
+        ++ n "text-sidebar"
+        ++ " { color: var(--"
+        ++ n "text-sidebar"
+        ++ "); }\n."
+        ++ n "text-sidebar-muted"
+        ++ " { color: var(--"
+        ++ n "text-sidebar-muted"
+        ++ "); }\n\n."
+        ++ n "border-default"
+        ++ " { border-color: var(--"
+        ++ n "border"
+        ++ "); }\n."
+        ++ n "border-subtle"
+        ++ " { border-color: var(--"
+        ++ n "border-subtle"
+        ++ "); }\n\n."
+        ++ n "text-link"
+        ++ " { color: var(--"
+        ++ n "link"
+        ++ "); }\n."
+        ++ n "bg-primary"
+        ++ " { background-color: var(--"
+        ++ n "primary"
+        ++ "); }\n."
+        ++ n "bg-primary-hover"
+        ++ ":hover { background-color: var(--"
+        ++ n "primary-hover"
+        ++ "); }\n\n."
+        ++ n "bg-warning"
+        ++ " { background-color: var(--"
+        ++ n "warning-surface"
+        ++ "); }\n."
+        ++ n "border-warning"
+        ++ " { border-color: var(--"
+        ++ n "warning-border"
+        ++ "); }\n."
+        ++ n "text-warning"
+        ++ " { color: var(--"
+        ++ n "warning-text"
+        ++ "); }\n\n."
+        ++ n "bg-danger"
+        ++ " { background-color: var(--"
+        ++ n "danger-surface"
+        ++ "); }\n."
+        ++ n "border-danger"
+        ++ " { border-color: var(--"
+        ++ n "danger-border"
+        ++ "); }\n."
+        ++ n "text-danger"
+        ++ " { color: var(--"
+        ++ n "danger-text"
+        ++ "); }\n\n."
+        ++ n "bg-success"
+        ++ " { background-color: var(--"
+        ++ n "success-surface"
+        ++ "); }\n."
+        ++ n "border-success"
+        ++ " { border-color: var(--"
+        ++ n "success-border"
+        ++ "); }\n."
+        ++ n "text-success"
+        ++ " { color: var(--"
+        ++ n "success-text"
+        ++ "); }"
 
 
 -- COLOR CONVERSION (Oklch -> sRGB -> Hex)
