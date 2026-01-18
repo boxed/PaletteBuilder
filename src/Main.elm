@@ -601,16 +601,19 @@ view model =
                 , div [ class "palette-panel" ]
                     [ viewLivePreview model ]
                 ]
-            , div [ class "previews-row" ]
-                [ div [ class "preview-section" ]
-                    [ h3 [ class "preview-label" ] [ text "Light Mode" ]
-                    , viewChatPreview model
-                    , viewButtonPreview model False
-                    ]
-                , div [ class "preview-section" ]
-                    [ h3 [ class "preview-label" ] [ text "Dark Mode" ]
-                    , viewChatPreviewDark model
-                    , viewButtonPreview model True
+            , div [ class "previews-section" ]
+                [ p [ class "preview-hint" ] [ text "Click on any element to highlight its colors in the palette above." ]
+                , div [ class "previews-row" ]
+                    [ div [ class "preview-section" ]
+                        [ h3 [ class "preview-label" ] [ text "Light Mode" ]
+                        , viewChatPreview model False
+                        , viewButtonPreview model False
+                        ]
+                    , div [ class "preview-section" ]
+                        [ h3 [ class "preview-label" ] [ text "Dark Mode" ]
+                        , viewChatPreview model True
+                        , viewButtonPreview model True
+                        ]
                     ]
                 ]
             ]
@@ -1028,125 +1031,223 @@ activeClass isActive =
         ""
 
 
-viewChatPreview : Model -> Html Msg
-viewChatPreview model =
+viewChatPreview : Model -> Bool -> Html Msg
+viewChatPreview model isDark =
     let
         colors =
             getPreviewColors model
 
         clickable colorList attrs children =
             div ([ class "preview-clickable", stopPropagationOn "click" (Decode.succeed ( HighlightColors colorList, True )) ] ++ attrs) children
+
+        -- Theme-dependent colors
+        mainBg =
+            if isDark then colors.gray900 else colors.gray0
+
+        headerBorder =
+            if isDark then colors.gray700 else colors.gray200
+
+        headerText =
+            if isDark then colors.gray100 else colors.gray900
+
+        messageText =
+            if isDark then colors.gray300 else colors.gray700
+
+        messageAuthor =
+            if isDark then colors.gray100 else colors.gray900
+
+        messageTime =
+            if isDark then colors.gray500 else colors.gray400
+
+        mentionColor =
+            if isDark then colors.primary400 else colors.primary500
+
+        secondAvatar =
+            if isDark then colors.gray600 else colors.gray400
+
+        inputBg =
+            if isDark then colors.gray800 else colors.gray50
+
+        inputBorder =
+            if isDark then colors.gray700 else colors.gray200
+
+        inputText =
+            if isDark then colors.gray500 else colors.gray400
+
+        dangerBg =
+            if isDark then colors.danger900 else colors.danger100
+
+        dangerBorder =
+            if isDark then colors.danger800 else colors.danger200
+
+        dangerText =
+            if isDark then colors.danger200 else colors.danger700
+
+        warningBg =
+            if isDark then colors.warning900 else colors.warning100
+
+        warningBorder =
+            if isDark then colors.warning800 else colors.warning200
+
+        warningText =
+            if isDark then colors.warning200 else colors.warning700
+
+        successBg =
+            if isDark then colors.success900 else colors.success100
+
+        successBorder =
+            if isDark then colors.success800 else colors.success200
+
+        successText =
+            if isDark then colors.success200 else colors.success700
+
+        previewId =
+            if isDark then "preview-dark" else "preview-light"
+
+        cssVars =
+            "#" ++ previewId ++ """ {
+              --p-sidebar-bg: """ ++ colors.primary800 ++ """;
+              --p-sidebar-active: """ ++ colors.primary900 ++ """;
+              --p-sidebar-text: """ ++ colors.primary100 ++ """;
+              --p-sidebar-text-muted: """ ++ colors.primary200 ++ """;
+              --p-sidebar-label: """ ++ colors.primary300 ++ """;
+              --p-text-white: """ ++ colors.gray0 ++ """;
+              --p-status-online: """ ++ colors.success500 ++ """;
+              --p-icon-muted: """ ++ colors.primary100 ++ """;
+              --p-badge-neutral-bg: """ ++ colors.gray400 ++ """;
+              --p-badge-danger-bg: """ ++ colors.danger500 ++ """;
+              --p-badge-warning-bg: """ ++ colors.warning200 ++ """;
+              --p-badge-warning-text: """ ++ colors.warning800 ++ """;
+              --p-main-bg: """ ++ mainBg ++ """;
+              --p-header-border: """ ++ headerBorder ++ """;
+              --p-header-text: """ ++ headerText ++ """;
+              --p-message-text: """ ++ messageText ++ """;
+              --p-message-author: """ ++ messageAuthor ++ """;
+              --p-message-time: """ ++ messageTime ++ """;
+              --p-mention: """ ++ mentionColor ++ """;
+              --p-avatar-primary: """ ++ colors.primary400 ++ """;
+              --p-avatar-secondary: """ ++ secondAvatar ++ """;
+              --p-input-bg: """ ++ inputBg ++ """;
+              --p-input-border: """ ++ inputBorder ++ """;
+              --p-input-text: """ ++ inputText ++ """;
+              --p-danger-bg: """ ++ dangerBg ++ """;
+              --p-danger-border: """ ++ dangerBorder ++ """;
+              --p-danger-text: """ ++ dangerText ++ """;
+              --p-warning-bg: """ ++ warningBg ++ """;
+              --p-warning-border: """ ++ warningBorder ++ """;
+              --p-warning-text: """ ++ warningText ++ """;
+              --p-success-bg: """ ++ successBg ++ """;
+              --p-success-border: """ ++ successBorder ++ """;
+              --p-success-text: """ ++ successText ++ """;
+            }"""
     in
-    div [ class "chat-preview", onClick ClearHighlight ]
-        [ div
-            [ class "chat-sidebar"
-            , style "background-color" colors.primary800
+    div [ class ("chat-preview" ++ if isDark then " dark" else ""), id previewId, onClick ClearHighlight ]
+        [ Html.node "style" [] [ text cssVars ]
+        , div
+            [ class "chat-sidebar p-sidebar-bg"
             , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary800 ], True ))
             ]
             [ clickable [ colors.primary800, colors.gray0 ]
                 [ class "chat-workspace" ]
-                [ span [ style "color" colors.gray0 ] [ text "Workspace" ]
+                [ span [ class "p-text-white" ] [ text "Workspace" ]
                 , div [ class "chat-user" ]
-                    [ span [ class "status-dot preview-clickable", style "background-color" colors.success500, stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.success500 ], True )) ] []
-                    , span [ style "color" colors.primary200 ] [ text "You" ]
+                    [ span [ class "status-dot preview-clickable p-status-online", stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.success500 ], True )) ] []
+                    , span [ class "p-sidebar-text-muted" ] [ text "You" ]
                     ]
                 ]
             , div [ class "chat-nav" ]
-                [ clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-nav-item", style "color" colors.primary100 ]
-                    [ text "Inbox" ]
-                , clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-nav-item", style "color" colors.primary100 ]
-                    [ text "Starred" ]
+                [ clickable [ colors.primary800, colors.gray0, colors.primary100 ]
+                    [ class "chat-nav-item p-text-white" ]
+                    [ i [ class "fa-solid fa-inbox p-icon-muted" ] [], text " Inbox" ]
+                , clickable [ colors.primary800, colors.gray0, colors.primary100 ]
+                    [ class "chat-nav-item p-text-white" ]
+                    [ i [ class "fa-solid fa-star p-icon-muted" ] [], text " Starred" ]
                 ]
             , clickable [ colors.primary800, colors.primary300 ]
-                [ class "chat-channels-label", style "color" colors.primary300 ]
+                [ class "chat-channels-label p-sidebar-label" ]
                 [ text "CHANNELS" ]
             , div [ class "chat-channels" ]
                 [ clickable [ colors.primary900, colors.gray0 ]
-                    [ class "chat-channel selected"
-                    , style "background-color" colors.primary900
-                    , style "color" colors.gray0
-                    ]
-                    [ text "# design" ]
+                    [ class "chat-channel selected p-sidebar-active p-text-white" ]
+                    [ text "design" ]
                 , clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-channel"
-                    , style "color" colors.primary100
-                    ]
-                    [ text "# engineering"
+                    [ class "chat-channel p-sidebar-text" ]
+                    [ text "engineering"
                     , span
-                        [ class "unread-badge preview-clickable"
-                        , style "background-color" colors.danger500
-                        , style "color" colors.gray0
-                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.danger500, colors.gray0 ], True ))
+                        [ class "unread-badge preview-clickable p-badge-neutral"
+                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.gray400, colors.gray0 ], True ))
                         ]
                         [ text "4" ]
                     ]
                 , clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-channel", style "color" colors.primary100 ]
-                    [ text "# marketing" ]
+                    [ class "chat-channel p-sidebar-text" ]
+                    [ text "incidents"
+                    , span
+                        [ class "unread-badge preview-clickable p-badge-danger"
+                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.danger500, colors.gray0 ], True ))
+                        ]
+                        [ text "2" ]
+                    ]
+                , clickable [ colors.primary800, colors.primary100 ]
+                    [ class "chat-channel p-sidebar-text" ]
+                    [ text "alerts"
+                    , span
+                        [ class "unread-badge preview-clickable p-badge-warning"
+                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.warning200, colors.warning800 ], True ))
+                        ]
+                        [ text "!" ]
+                    ]
                 ]
             ]
         , div
-            [ class "chat-main"
-            , style "background-color" colors.gray0
-            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.gray0 ], True ))
+            [ class "chat-main p-main-bg"
+            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ mainBg ], True ))
             ]
-            [ clickable [ colors.gray0, colors.gray900 ]
-                [ class "chat-header", style "border-color" colors.gray200 ]
-                [ span [ style "color" colors.gray900 ] [ text "# design" ] ]
+            [ clickable [ mainBg, headerText ]
+                [ class "chat-header p-header-border" ]
+                [ span [ class "p-header-text" ] [ text "# design" ] ]
             , div [ class "chat-alerts" ]
-                [ clickable [ colors.danger100, colors.danger700 ]
-                    [ class "chat-alert"
-                    , style "background-color" colors.danger100
-                    , style "border-color" colors.danger200
+                [ clickable [ dangerBg, dangerText ]
+                    [ class "chat-alert p-alert-danger" ]
+                    [ div [ class "alert-icon p-danger-text" ] [ text "✕" ]
+                    , div [ class "p-danger-text" ] [ text "Upload failed. Please try again." ]
                     ]
-                    [ div [ class "alert-icon", style "color" colors.danger700 ] [ text "✕" ]
-                    , div [ style "color" colors.danger700 ] [ text "Upload failed. Please try again." ]
+                , clickable [ warningBg, warningText ]
+                    [ class "chat-alert p-alert-warning" ]
+                    [ div [ class "alert-icon p-warning-text" ] [ text "!" ]
+                    , div [ class "p-warning-text" ] [ text "Connection unstable." ]
                     ]
-                , clickable [ colors.warning100, colors.warning700 ]
-                    [ class "chat-alert"
-                    , style "background-color" colors.warning100
-                    , style "border-color" colors.warning200
-                    ]
-                    [ div [ class "alert-icon", style "color" colors.warning700 ] [ text "!" ]
-                    , div [ style "color" colors.warning700 ] [ text "Connection unstable." ]
-                    ]
-                , clickable [ colors.success100, colors.success700 ]
-                    [ class "chat-alert"
-                    , style "background-color" colors.success100
-                    , style "border-color" colors.success200
-                    ]
-                    [ div [ class "alert-icon", style "color" colors.success700 ] [ text "✓" ]
-                    , div [ style "color" colors.success700 ] [ text "Message sent successfully." ]
+                , clickable [ successBg, successText ]
+                    [ class "chat-alert p-alert-success" ]
+                    [ div [ class "alert-icon p-success-text" ] [ text "✓" ]
+                    , div [ class "p-success-text" ] [ text "Message sent successfully." ]
                     ]
                 ]
             , div [ class "chat-messages" ]
-                [ clickable [ colors.gray0, colors.gray700 ]
+                [ clickable [ mainBg, messageText ]
                     [ class "chat-message" ]
-                    [ div [ class "message-avatar", style "background-color" colors.primary400 ] []
+                    [ div [ class "message-avatar p-avatar-primary" ] []
                     , div [ class "message-content" ]
                         [ div [ class "message-header" ]
-                            [ span [ class "message-author", style "color" colors.gray900 ] [ text "Sarah Porter" ]
-                            , span [ class "message-time", style "color" colors.gray400 ] [ text "12:48 PM" ]
+                            [ span [ class "message-author p-message-author" ] [ text "Sarah Porter" ]
+                            , span [ class "message-time p-message-time" ] [ text "12:48 PM" ]
                             ]
-                        , div [ class "message-text", style "color" colors.gray700 ]
+                        , div [ class "message-text p-message-text" ]
                             [ text "No problem! I'll upload the notes shortly." ]
                         ]
                     ]
-                , clickable [ colors.gray0, colors.gray700 ]
+                , clickable [ mainBg, messageText ]
                     [ class "chat-message" ]
-                    [ div [ class "message-avatar", style "background-color" colors.gray400 ] []
+                    [ div [ class "message-avatar p-avatar-secondary" ] []
                     , div [ class "message-content" ]
                         [ div [ class "message-header" ]
-                            [ span [ class "message-author", style "color" colors.gray900 ] [ text "Tiffany Myers" ]
-                            , span [ class "message-time", style "color" colors.gray400 ] [ text "12:51 PM" ]
+                            [ span [ class "message-author p-message-author" ] [ text "Tiffany Myers" ]
+                            , span [ class "message-time p-message-time" ] [ text "12:51 PM" ]
                             ]
-                        , div [ class "message-text", style "color" colors.gray700 ]
+                        , div [ class "message-text p-message-text" ]
                             [ span
-                                [ style "color" colors.primary500
-                                , class "preview-clickable"
-                                , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary500 ], True ))
+                                [ class "preview-clickable p-mention"
+                                , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ mentionColor ], True ))
                                 ]
                                 [ text "@sarah " ]
                             , text "I put the photos in the shared folder."
@@ -1154,142 +1255,9 @@ viewChatPreview model =
                         ]
                     ]
                 ]
-            , clickable [ colors.gray50, colors.gray400 ]
-                [ class "chat-input", style "background-color" colors.gray50, style "border-color" colors.gray200 ]
-                [ span [ style "color" colors.gray400 ] [ text "Type your message..." ] ]
-            ]
-        ]
-
-
-viewChatPreviewDark : Model -> Html Msg
-viewChatPreviewDark model =
-    let
-        colors =
-            getPreviewColors model
-
-        clickable colorList attrs children =
-            div ([ class "preview-clickable", stopPropagationOn "click" (Decode.succeed ( HighlightColors colorList, True )) ] ++ attrs) children
-    in
-    div [ class "chat-preview dark", onClick ClearHighlight ]
-        [ div
-            [ class "chat-sidebar"
-            , style "background-color" colors.primary800
-            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary800 ], True ))
-            ]
-            [ clickable [ colors.primary800, colors.gray0 ]
-                [ class "chat-workspace" ]
-                [ span [ style "color" colors.gray0 ] [ text "Workspace" ]
-                , div [ class "chat-user" ]
-                    [ span [ class "status-dot preview-clickable", style "background-color" colors.success500, stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.success500 ], True )) ] []
-                    , span [ style "color" colors.primary200 ] [ text "You" ]
-                    ]
-                ]
-            , div [ class "chat-nav" ]
-                [ clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-nav-item", style "color" colors.primary100 ]
-                    [ text "Inbox" ]
-                , clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-nav-item", style "color" colors.primary100 ]
-                    [ text "Starred" ]
-                ]
-            , clickable [ colors.primary800, colors.primary300 ]
-                [ class "chat-channels-label", style "color" colors.primary300 ]
-                [ text "CHANNELS" ]
-            , div [ class "chat-channels" ]
-                [ clickable [ colors.primary900, colors.gray0 ]
-                    [ class "chat-channel selected"
-                    , style "background-color" colors.primary900
-                    , style "color" colors.gray0
-                    ]
-                    [ text "# design" ]
-                , clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-channel"
-                    , style "color" colors.primary100
-                    ]
-                    [ text "# engineering"
-                    , span
-                        [ class "unread-badge preview-clickable"
-                        , style "background-color" colors.danger500
-                        , style "color" colors.gray0
-                        , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.danger500, colors.gray0 ], True ))
-                        ]
-                        [ text "4" ]
-                    ]
-                , clickable [ colors.primary800, colors.primary100 ]
-                    [ class "chat-channel", style "color" colors.primary100 ]
-                    [ text "# marketing" ]
-                ]
-            ]
-        , div
-            [ class "chat-main"
-            , style "background-color" colors.gray900
-            , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.gray900 ], True ))
-            ]
-            [ clickable [ colors.gray900, colors.gray100 ]
-                [ class "chat-header", style "border-color" colors.gray700 ]
-                [ span [ style "color" colors.gray100 ] [ text "# design" ] ]
-            , div [ class "chat-alerts" ]
-                [ clickable [ colors.danger900, colors.danger200 ]
-                    [ class "chat-alert"
-                    , style "background-color" colors.danger900
-                    , style "border-color" colors.danger800
-                    ]
-                    [ div [ class "alert-icon", style "color" colors.danger200 ] [ text "✕" ]
-                    , div [ style "color" colors.danger200 ] [ text "Upload failed. Please try again." ]
-                    ]
-                , clickable [ colors.warning900, colors.warning200 ]
-                    [ class "chat-alert"
-                    , style "background-color" colors.warning900
-                    , style "border-color" colors.warning800
-                    ]
-                    [ div [ class "alert-icon", style "color" colors.warning200 ] [ text "!" ]
-                    , div [ style "color" colors.warning200 ] [ text "Connection unstable." ]
-                    ]
-                , clickable [ colors.success900, colors.success200 ]
-                    [ class "chat-alert"
-                    , style "background-color" colors.success900
-                    , style "border-color" colors.success800
-                    ]
-                    [ div [ class "alert-icon", style "color" colors.success200 ] [ text "✓" ]
-                    , div [ style "color" colors.success200 ] [ text "Message sent successfully." ]
-                    ]
-                ]
-            , div [ class "chat-messages" ]
-                [ clickable [ colors.gray900, colors.gray300 ]
-                    [ class "chat-message" ]
-                    [ div [ class "message-avatar", style "background-color" colors.primary400 ] []
-                    , div [ class "message-content" ]
-                        [ div [ class "message-header" ]
-                            [ span [ class "message-author", style "color" colors.gray100 ] [ text "Sarah Porter" ]
-                            , span [ class "message-time", style "color" colors.gray500 ] [ text "12:48 PM" ]
-                            ]
-                        , div [ class "message-text", style "color" colors.gray300 ]
-                            [ text "No problem! I'll upload the notes shortly." ]
-                        ]
-                    ]
-                , clickable [ colors.gray900, colors.gray300 ]
-                    [ class "chat-message" ]
-                    [ div [ class "message-avatar", style "background-color" colors.gray600 ] []
-                    , div [ class "message-content" ]
-                        [ div [ class "message-header" ]
-                            [ span [ class "message-author", style "color" colors.gray100 ] [ text "Tiffany Myers" ]
-                            , span [ class "message-time", style "color" colors.gray500 ] [ text "12:51 PM" ]
-                            ]
-                        , div [ class "message-text", style "color" colors.gray300 ]
-                            [ span
-                                [ style "color" colors.primary400
-                                , class "preview-clickable"
-                                , stopPropagationOn "click" (Decode.succeed ( HighlightColors [ colors.primary400 ], True ))
-                                ]
-                                [ text "@sarah " ]
-                            , text "I put the photos in the shared folder."
-                            ]
-                        ]
-                    ]
-                ]
-            , clickable [ colors.gray800, colors.gray500 ]
-                [ class "chat-input", style "background-color" colors.gray800, style "border-color" colors.gray700 ]
-                [ span [ style "color" colors.gray500 ] [ text "Type your message..." ] ]
+            , clickable [ inputBg, inputText ]
+                [ class "chat-input p-input" ]
+                [ span [ class "p-input-text" ] [ text "Type your message..." ] ]
             ]
         ]
 
@@ -1301,68 +1269,44 @@ viewButtonPreview model isDark =
             getPreviewColors model
 
         bgColor =
-            if isDark then
-                colors.gray900
-            else
-                colors.gray0
+            if isDark then colors.gray900 else colors.gray0
 
         secondaryBg =
-            if isDark then
-                colors.gray700
-            else
-                colors.gray100
+            if isDark then colors.gray700 else colors.gray100
 
         secondaryText =
-            if isDark then
-                colors.gray100
-            else
-                colors.gray700
+            if isDark then colors.gray100 else colors.gray700
 
         secondaryBorder =
-            if isDark then
-                colors.gray600
-            else
-                colors.gray300
+            if isDark then colors.gray600 else colors.gray300
+
+        previewId =
+            if isDark then "btn-preview-dark" else "btn-preview-light"
+
+        cssVars =
+            "#" ++ previewId ++ """ {
+              --pb-bg: """ ++ bgColor ++ """;
+              --pb-primary-bg: """ ++ colors.primary500 ++ """;
+              --pb-primary-text: """ ++ colors.gray0 ++ """;
+              --pb-secondary-bg: """ ++ secondaryBg ++ """;
+              --pb-secondary-text: """ ++ secondaryText ++ """;
+              --pb-secondary-border: """ ++ secondaryBorder ++ """;
+              --pb-danger-bg: """ ++ colors.danger500 ++ """;
+              --pb-danger-text: """ ++ colors.gray0 ++ """;
+              --pb-warning-bg: """ ++ colors.warning200 ++ """;
+              --pb-warning-text: """ ++ colors.warning800 ++ """;
+              --pb-success-bg: """ ++ colors.success500 ++ """;
+              --pb-success-text: """ ++ colors.gray0 ++ """;
+            }"""
     in
-    div
-        [ class "button-preview"
-        , style "background-color" bgColor
-        , style "padding" "1rem"
-        , style "border-radius" "8px"
-        , style "margin-top" "0.5rem"
-        ]
-        [ div [ class "button-row" ]
-            [ button
-                [ class "preview-btn"
-                , style "background-color" colors.primary500
-                , style "color" colors.gray0
-                ]
-                [ text "Primary" ]
-            , button
-                [ class "preview-btn"
-                , style "background-color" secondaryBg
-                , style "color" secondaryText
-                , style "border" ("1px solid " ++ secondaryBorder)
-                ]
-                [ text "Secondary" ]
-            , button
-                [ class "preview-btn"
-                , style "background-color" colors.danger500
-                , style "color" colors.gray0
-                ]
-                [ text "Danger" ]
-            , button
-                [ class "preview-btn"
-                , style "background-color" colors.warning200
-                , style "color" colors.warning800
-                ]
-                [ text "Warning" ]
-            , button
-                [ class "preview-btn"
-                , style "background-color" colors.success500
-                , style "color" colors.gray0
-                ]
-                [ text "Success" ]
+    div [ class "button-preview pb-bg", id previewId ]
+        [ Html.node "style" [] [ text cssVars ]
+        , div [ class "button-row" ]
+            [ button [ class "preview-btn pb-primary" ] [ text "Primary" ]
+            , button [ class "preview-btn pb-secondary" ] [ text "Secondary" ]
+            , button [ class "preview-btn pb-danger" ] [ text "Danger" ]
+            , button [ class "preview-btn pb-warning" ] [ text "Warning" ]
+            , button [ class "preview-btn pb-success" ] [ text "Success" ]
             ]
         ]
 

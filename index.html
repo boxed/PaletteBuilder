@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Palette Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -554,6 +555,13 @@
             min-width: 0;
         }
 
+        .preview-hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
         .preview-label {
             font-size: 12px;
             font-weight: 600;
@@ -621,6 +629,19 @@
         .chat-nav-item {
             padding: 0.2rem 0.4rem;
             font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .chat-nav-item i {
+            width: 14px;
+            text-align: center;
+        }
+
+        .chat-channel i {
+            font-size: 9px;
+            opacity: 0.7;
         }
 
         .chat-channels-label {
@@ -642,11 +663,18 @@
             border-radius: 4px;
             font-size: 11px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 0.2rem;
+        }
+
+        .chat-channel.selected {
+            margin: 0 -0.5rem;
+            padding: 0.25rem 0.9rem;
+            border-radius: 0;
         }
 
         .unread-badge {
+            margin-left: auto;
             font-size: 9px;
             padding: 1px 5px;
             border-radius: 8px;
@@ -756,6 +784,9 @@
         /* Button Preview */
         .button-preview {
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
         }
 
         .button-row {
@@ -777,6 +808,44 @@
         .preview-btn:hover {
             opacity: 0.9;
         }
+
+        /* Button preview classes using CSS custom properties */
+        .pb-bg { background-color: var(--pb-bg); }
+        .pb-primary { background-color: var(--pb-primary-bg); color: var(--pb-primary-text); }
+        .pb-secondary { background-color: var(--pb-secondary-bg); color: var(--pb-secondary-text); border: 1px solid var(--pb-secondary-border); }
+        .pb-danger { background-color: var(--pb-danger-bg); color: var(--pb-danger-text); }
+        .pb-warning { background-color: var(--pb-warning-bg); color: var(--pb-warning-text); }
+        .pb-success { background-color: var(--pb-success-bg); color: var(--pb-success-text); }
+
+        /* Chat preview classes using CSS custom properties */
+        .p-sidebar-bg { background-color: var(--p-sidebar-bg); }
+        .p-sidebar-active { background-color: var(--p-sidebar-active); }
+        .p-sidebar-text { color: var(--p-text-white); }
+        .p-sidebar-text-muted { color: var(--p-sidebar-text-muted); }
+        .p-sidebar-label { color: var(--p-sidebar-label); }
+        .p-text-white { color: var(--p-text-white); }
+        .p-status-online { background-color: var(--p-status-online); }
+        .p-icon-muted { color: var(--p-icon-muted); }
+        .p-badge-neutral { background-color: var(--p-badge-neutral-bg); color: var(--p-text-white); }
+        .p-badge-danger { background-color: var(--p-badge-danger-bg); color: var(--p-text-white); }
+        .p-badge-warning { background-color: var(--p-badge-warning-bg); color: var(--p-badge-warning-text); }
+        .p-main-bg { background-color: var(--p-main-bg); }
+        .p-header-border { border-color: var(--p-header-border); }
+        .p-header-text { color: var(--p-header-text); }
+        .p-message-text { color: var(--p-message-text); }
+        .p-message-author { color: var(--p-message-author); }
+        .p-message-time { color: var(--p-message-time); }
+        .p-mention { color: var(--p-mention); }
+        .p-avatar-primary { background-color: var(--p-avatar-primary); }
+        .p-avatar-secondary { background-color: var(--p-avatar-secondary); }
+        .p-input { background-color: var(--p-input-bg); border-color: var(--p-input-border); }
+        .p-input-text { color: var(--p-input-text); }
+        .p-alert-danger { background-color: var(--p-danger-bg); border-color: var(--p-danger-border); }
+        .p-alert-warning { background-color: var(--p-warning-bg); border-color: var(--p-warning-border); }
+        .p-alert-success { background-color: var(--p-success-bg); border-color: var(--p-success-border); }
+        .p-danger-text { color: var(--p-danger-text); }
+        .p-warning-text { color: var(--p-warning-text); }
+        .p-success-text { color: var(--p-success-text); }
 
         .preview-clickable {
             cursor: pointer;

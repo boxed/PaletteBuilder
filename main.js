@@ -5883,6 +5883,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $elm$html$Html$button = _VirtualDom_node('button');
@@ -6087,27 +6088,38 @@ var $author$project$Main$getPreviewColors = function (model) {
 		warning900: A3(getColor, scales.warning, 900, '#78350f')
 	};
 };
-var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
-var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$Attributes$id = $elm$html$Html$Attributes$stringProperty('id');
+var $elm$virtual_dom$VirtualDom$node = function (tag) {
+	return _VirtualDom_node(
+		_VirtualDom_noScript(tag));
+};
+var $elm$html$Html$node = $elm$virtual_dom$VirtualDom$node;
 var $author$project$Main$viewButtonPreview = F2(
 	function (model, isDark) {
+		var previewId = isDark ? 'btn-preview-dark' : 'btn-preview-light';
 		var colors = $author$project$Main$getPreviewColors(model);
 		var secondaryBg = isDark ? colors.gray700 : colors.gray100;
 		var secondaryBorder = isDark ? colors.gray600 : colors.gray300;
 		var secondaryText = isDark ? colors.gray100 : colors.gray700;
 		var bgColor = isDark ? colors.gray900 : colors.gray0;
+		var cssVars = '#' + (previewId + (' {\n              --pb-bg: ' + (bgColor + (';\n              --pb-primary-bg: ' + (colors.primary500 + (';\n              --pb-primary-text: ' + (colors.gray0 + (';\n              --pb-secondary-bg: ' + (secondaryBg + (';\n              --pb-secondary-text: ' + (secondaryText + (';\n              --pb-secondary-border: ' + (secondaryBorder + (';\n              --pb-danger-bg: ' + (colors.danger500 + (';\n              --pb-danger-text: ' + (colors.gray0 + (';\n              --pb-warning-bg: ' + (colors.warning200 + (';\n              --pb-warning-text: ' + (colors.warning800 + (';\n              --pb-success-bg: ' + (colors.success500 + (';\n              --pb-success-text: ' + (colors.gray0 + ';\n            }')))))))))))))))))))))))));
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
 				[
-					$elm$html$Html$Attributes$class('button-preview'),
-					A2($elm$html$Html$Attributes$style, 'background-color', bgColor),
-					A2($elm$html$Html$Attributes$style, 'padding', '1rem'),
-					A2($elm$html$Html$Attributes$style, 'border-radius', '8px'),
-					A2($elm$html$Html$Attributes$style, 'margin-top', '0.5rem')
+					$elm$html$Html$Attributes$class('button-preview pb-bg'),
+					$elm$html$Html$Attributes$id(previewId)
 				]),
 			_List_fromArray(
 				[
+					A3(
+					$elm$html$Html$node,
+					'style',
+					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$text(cssVars)
+						])),
 					A2(
 					$elm$html$Html$div,
 					_List_fromArray(
@@ -6120,9 +6132,7 @@ var $author$project$Main$viewButtonPreview = F2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('preview-btn'),
-									A2($elm$html$Html$Attributes$style, 'background-color', colors.primary500),
-									A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
+									$elm$html$Html$Attributes$class('preview-btn pb-primary')
 								]),
 							_List_fromArray(
 								[
@@ -6132,10 +6142,7 @@ var $author$project$Main$viewButtonPreview = F2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('preview-btn'),
-									A2($elm$html$Html$Attributes$style, 'background-color', secondaryBg),
-									A2($elm$html$Html$Attributes$style, 'color', secondaryText),
-									A2($elm$html$Html$Attributes$style, 'border', '1px solid ' + secondaryBorder)
+									$elm$html$Html$Attributes$class('preview-btn pb-secondary')
 								]),
 							_List_fromArray(
 								[
@@ -6145,9 +6152,7 @@ var $author$project$Main$viewButtonPreview = F2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('preview-btn'),
-									A2($elm$html$Html$Attributes$style, 'background-color', colors.danger500),
-									A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
+									$elm$html$Html$Attributes$class('preview-btn pb-danger')
 								]),
 							_List_fromArray(
 								[
@@ -6157,9 +6162,7 @@ var $author$project$Main$viewButtonPreview = F2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('preview-btn'),
-									A2($elm$html$Html$Attributes$style, 'background-color', colors.warning200),
-									A2($elm$html$Html$Attributes$style, 'color', colors.warning800)
+									$elm$html$Html$Attributes$class('preview-btn pb-warning')
 								]),
 							_List_fromArray(
 								[
@@ -6169,9 +6172,7 @@ var $author$project$Main$viewButtonPreview = F2(
 							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('preview-btn'),
-									A2($elm$html$Html$Attributes$style, 'background-color', colors.success500),
-									A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
+									$elm$html$Html$Attributes$class('preview-btn pb-success')
 								]),
 							_List_fromArray(
 								[
@@ -6184,6 +6185,7 @@ var $author$project$Main$ClearHighlight = {$: 'ClearHighlight'};
 var $author$project$Main$HighlightColors = function (a) {
 	return {$: 'HighlightColors', a: a};
 };
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 'Normal', a: a};
 };
@@ -6212,1146 +6214,640 @@ var $elm$html$Html$Events$stopPropagationOn = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$MayStopPropagation(decoder));
 	});
-var $author$project$Main$viewChatPreview = function (model) {
-	var colors = $author$project$Main$getPreviewColors(model);
-	var clickable = F3(
-		function (colorList, attrs, children) {
-			return A2(
-				$elm$html$Html$div,
-				_Utils_ap(
+var $author$project$Main$viewChatPreview = F2(
+	function (model, isDark) {
+		var previewId = isDark ? 'preview-dark' : 'preview-light';
+		var colors = $author$project$Main$getPreviewColors(model);
+		var dangerBg = isDark ? colors.danger900 : colors.danger100;
+		var dangerBorder = isDark ? colors.danger800 : colors.danger200;
+		var dangerText = isDark ? colors.danger200 : colors.danger700;
+		var headerBorder = isDark ? colors.gray700 : colors.gray200;
+		var headerText = isDark ? colors.gray100 : colors.gray900;
+		var inputBg = isDark ? colors.gray800 : colors.gray50;
+		var inputBorder = isDark ? colors.gray700 : colors.gray200;
+		var inputText = isDark ? colors.gray500 : colors.gray400;
+		var mainBg = isDark ? colors.gray900 : colors.gray0;
+		var mentionColor = isDark ? colors.primary400 : colors.primary500;
+		var messageAuthor = isDark ? colors.gray100 : colors.gray900;
+		var messageText = isDark ? colors.gray300 : colors.gray700;
+		var messageTime = isDark ? colors.gray500 : colors.gray400;
+		var secondAvatar = isDark ? colors.gray600 : colors.gray400;
+		var successBg = isDark ? colors.success900 : colors.success100;
+		var successBorder = isDark ? colors.success800 : colors.success200;
+		var successText = isDark ? colors.success200 : colors.success700;
+		var warningBg = isDark ? colors.warning900 : colors.warning100;
+		var warningBorder = isDark ? colors.warning800 : colors.warning200;
+		var warningText = isDark ? colors.warning200 : colors.warning700;
+		var cssVars = '#' + (previewId + (' {\n              --p-sidebar-bg: ' + (colors.primary800 + (';\n              --p-sidebar-active: ' + (colors.primary900 + (';\n              --p-sidebar-text: ' + (colors.primary100 + (';\n              --p-sidebar-text-muted: ' + (colors.primary200 + (';\n              --p-sidebar-label: ' + (colors.primary300 + (';\n              --p-text-white: ' + (colors.gray0 + (';\n              --p-status-online: ' + (colors.success500 + (';\n              --p-icon-muted: ' + (colors.primary100 + (';\n              --p-badge-neutral-bg: ' + (colors.gray400 + (';\n              --p-badge-danger-bg: ' + (colors.danger500 + (';\n              --p-badge-warning-bg: ' + (colors.warning200 + (';\n              --p-badge-warning-text: ' + (colors.warning800 + (';\n              --p-main-bg: ' + (mainBg + (';\n              --p-header-border: ' + (headerBorder + (';\n              --p-header-text: ' + (headerText + (';\n              --p-message-text: ' + (messageText + (';\n              --p-message-author: ' + (messageAuthor + (';\n              --p-message-time: ' + (messageTime + (';\n              --p-mention: ' + (mentionColor + (';\n              --p-avatar-primary: ' + (colors.primary400 + (';\n              --p-avatar-secondary: ' + (secondAvatar + (';\n              --p-input-bg: ' + (inputBg + (';\n              --p-input-border: ' + (inputBorder + (';\n              --p-input-text: ' + (inputText + (';\n              --p-danger-bg: ' + (dangerBg + (';\n              --p-danger-border: ' + (dangerBorder + (';\n              --p-danger-text: ' + (dangerText + (';\n              --p-warning-bg: ' + (warningBg + (';\n              --p-warning-border: ' + (warningBorder + (';\n              --p-warning-text: ' + (warningText + (';\n              --p-success-bg: ' + (successBg + (';\n              --p-success-border: ' + (successBorder + (';\n              --p-success-text: ' + (successText + ';\n            }')))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))));
+		var clickable = F3(
+			function (colorList, attrs, children) {
+				return A2(
+					$elm$html$Html$div,
+					_Utils_ap(
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('preview-clickable'),
+								A2(
+								$elm$html$Html$Events$stopPropagationOn,
+								'click',
+								$elm$json$Json$Decode$succeed(
+									_Utils_Tuple2(
+										$author$project$Main$HighlightColors(colorList),
+										true)))
+							]),
+						attrs),
+					children);
+			});
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class(
+					'chat-preview' + (isDark ? ' dark' : '')),
+					$elm$html$Html$Attributes$id(previewId),
+					$elm$html$Html$Events$onClick($author$project$Main$ClearHighlight)
+				]),
+			_List_fromArray(
+				[
+					A3(
+					$elm$html$Html$node,
+					'style',
+					_List_Nil,
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('preview-clickable'),
+							$elm$html$Html$text(cssVars)
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('chat-sidebar p-sidebar-bg'),
 							A2(
 							$elm$html$Html$Events$stopPropagationOn,
 							'click',
 							$elm$json$Json$Decode$succeed(
 								_Utils_Tuple2(
-									$author$project$Main$HighlightColors(colorList),
+									$author$project$Main$HighlightColors(
+										_List_fromArray(
+											[colors.primary800])),
 									true)))
 						]),
-					attrs),
-				children);
-		});
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('chat-preview'),
-				$elm$html$Html$Events$onClick($author$project$Main$ClearHighlight)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('chat-sidebar'),
-						A2($elm$html$Html$Attributes$style, 'background-color', colors.primary800),
-						A2(
-						$elm$html$Html$Events$stopPropagationOn,
-						'click',
-						$elm$json$Json$Decode$succeed(
-							_Utils_Tuple2(
-								$author$project$Main$HighlightColors(
-									_List_fromArray(
-										[colors.primary800])),
-								true)))
-					]),
-				_List_fromArray(
-					[
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.primary800, colors.gray0]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-workspace')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Workspace')
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-user')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$span,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('status-dot preview-clickable'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.success500),
-												A2(
-												$elm$html$Html$Events$stopPropagationOn,
-												'click',
-												$elm$json$Json$Decode$succeed(
-													_Utils_Tuple2(
-														$author$project$Main$HighlightColors(
-															_List_fromArray(
-																[colors.success500])),
-														true)))
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$span,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.primary200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('You')
-											]))
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-nav')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-nav-item'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Inbox')
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-nav-item'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Starred')
-									]))
-							])),
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.primary800, colors.primary300]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-channels-label'),
-								A2($elm$html$Html$Attributes$style, 'color', colors.primary300)
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('CHANNELS')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-channels')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary900, colors.gray0]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-channel selected'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.primary900),
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# design')
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-channel'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# engineering'),
-										A2(
-										$elm$html$Html$span,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('unread-badge preview-clickable'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.danger500),
-												A2($elm$html$Html$Attributes$style, 'color', colors.gray0),
-												A2(
-												$elm$html$Html$Events$stopPropagationOn,
-												'click',
-												$elm$json$Json$Decode$succeed(
-													_Utils_Tuple2(
-														$author$project$Main$HighlightColors(
-															_List_fromArray(
-																[colors.danger500, colors.gray0])),
-														true)))
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('4')
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-channel'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# marketing')
-									]))
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('chat-main'),
-						A2($elm$html$Html$Attributes$style, 'background-color', colors.gray0),
-						A2(
-						$elm$html$Html$Events$stopPropagationOn,
-						'click',
-						$elm$json$Json$Decode$succeed(
-							_Utils_Tuple2(
-								$author$project$Main$HighlightColors(
-									_List_fromArray(
-										[colors.gray0])),
-								true)))
-					]),
-				_List_fromArray(
-					[
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.gray0, colors.gray900]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-header'),
-								A2($elm$html$Html$Attributes$style, 'border-color', colors.gray200)
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray900)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# design')
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-alerts')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.danger100, colors.danger700]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-alert'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.danger100),
-										A2($elm$html$Html$Attributes$style, 'border-color', colors.danger200)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('alert-icon'),
-												A2($elm$html$Html$Attributes$style, 'color', colors.danger700)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('✕')
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.danger700)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Upload failed. Please try again.')
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.warning100, colors.warning700]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-alert'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.warning100),
-										A2($elm$html$Html$Attributes$style, 'border-color', colors.warning200)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('alert-icon'),
-												A2($elm$html$Html$Attributes$style, 'color', colors.warning700)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('!')
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.warning700)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Connection unstable.')
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.success100, colors.success700]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-alert'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.success100),
-										A2($elm$html$Html$Attributes$style, 'border-color', colors.success200)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('alert-icon'),
-												A2($elm$html$Html$Attributes$style, 'color', colors.success700)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('✓')
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.success700)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Message sent successfully.')
-											]))
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-messages')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.gray0, colors.gray700]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-message')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-avatar'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.primary400)
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-content')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-header')
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-author'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray900)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Sarah Porter')
-															])),
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-time'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray400)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('12:48 PM')
-															]))
-													])),
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-text'),
-														A2($elm$html$Html$Attributes$style, 'color', colors.gray700)
-													]),
-												_List_fromArray(
-													[
-														$elm$html$Html$text('No problem! I\'ll upload the notes shortly.')
-													]))
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.gray0, colors.gray700]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-message')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-avatar'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.gray400)
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-content')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-header')
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-author'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray900)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Tiffany Myers')
-															])),
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-time'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray400)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('12:51 PM')
-															]))
-													])),
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-text'),
-														A2($elm$html$Html$Attributes$style, 'color', colors.gray700)
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																A2($elm$html$Html$Attributes$style, 'color', colors.primary500),
-																$elm$html$Html$Attributes$class('preview-clickable'),
-																A2(
-																$elm$html$Html$Events$stopPropagationOn,
-																'click',
-																$elm$json$Json$Decode$succeed(
-																	_Utils_Tuple2(
-																		$author$project$Main$HighlightColors(
-																			_List_fromArray(
-																				[colors.primary500])),
-																		true)))
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('@sarah ')
-															])),
-														$elm$html$Html$text('I put the photos in the shared folder.')
-													]))
-											]))
-									]))
-							])),
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.gray50, colors.gray400]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-input'),
-								A2($elm$html$Html$Attributes$style, 'background-color', colors.gray50),
-								A2($elm$html$Html$Attributes$style, 'border-color', colors.gray200)
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray400)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Type your message...')
-									]))
-							]))
-					]))
-			]));
-};
-var $author$project$Main$viewChatPreviewDark = function (model) {
-	var colors = $author$project$Main$getPreviewColors(model);
-	var clickable = F3(
-		function (colorList, attrs, children) {
-			return A2(
-				$elm$html$Html$div,
-				_Utils_ap(
 					_List_fromArray(
 						[
-							$elm$html$Html$Attributes$class('preview-clickable'),
+							A3(
+							clickable,
+							_List_fromArray(
+								[colors.primary800, colors.gray0]),
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-workspace')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$span,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('p-text-white')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Workspace')
+										])),
+									A2(
+									$elm$html$Html$div,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-user')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$span,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('status-dot preview-clickable p-status-online'),
+													A2(
+													$elm$html$Html$Events$stopPropagationOn,
+													'click',
+													$elm$json$Json$Decode$succeed(
+														_Utils_Tuple2(
+															$author$project$Main$HighlightColors(
+																_List_fromArray(
+																	[colors.success500])),
+															true)))
+												]),
+											_List_Nil),
+											A2(
+											$elm$html$Html$span,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('p-sidebar-text-muted')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('You')
+												]))
+										]))
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-nav')
+								]),
+							_List_fromArray(
+								[
+									A3(
+									clickable,
+									_List_fromArray(
+										[colors.primary800, colors.gray0, colors.primary100]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-nav-item p-text-white')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$i,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('fa-solid fa-inbox p-icon-muted')
+												]),
+											_List_Nil),
+											$elm$html$Html$text(' Inbox')
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[colors.primary800, colors.gray0, colors.primary100]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-nav-item p-text-white')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$i,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('fa-solid fa-star p-icon-muted')
+												]),
+											_List_Nil),
+											$elm$html$Html$text(' Starred')
+										]))
+								])),
+							A3(
+							clickable,
+							_List_fromArray(
+								[colors.primary800, colors.primary300]),
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-channels-label p-sidebar-label')
+								]),
+							_List_fromArray(
+								[
+									$elm$html$Html$text('CHANNELS')
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-channels')
+								]),
+							_List_fromArray(
+								[
+									A3(
+									clickable,
+									_List_fromArray(
+										[colors.primary900, colors.gray0]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-channel selected p-sidebar-active p-text-white')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('design')
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[colors.primary800, colors.primary100]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-channel p-sidebar-text')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('engineering'),
+											A2(
+											$elm$html$Html$span,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('unread-badge preview-clickable p-badge-neutral'),
+													A2(
+													$elm$html$Html$Events$stopPropagationOn,
+													'click',
+													$elm$json$Json$Decode$succeed(
+														_Utils_Tuple2(
+															$author$project$Main$HighlightColors(
+																_List_fromArray(
+																	[colors.gray400, colors.gray0])),
+															true)))
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('4')
+												]))
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[colors.primary800, colors.primary100]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-channel p-sidebar-text')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('incidents'),
+											A2(
+											$elm$html$Html$span,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('unread-badge preview-clickable p-badge-danger'),
+													A2(
+													$elm$html$Html$Events$stopPropagationOn,
+													'click',
+													$elm$json$Json$Decode$succeed(
+														_Utils_Tuple2(
+															$author$project$Main$HighlightColors(
+																_List_fromArray(
+																	[colors.danger500, colors.gray0])),
+															true)))
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('2')
+												]))
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[colors.primary800, colors.primary100]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-channel p-sidebar-text')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('alerts'),
+											A2(
+											$elm$html$Html$span,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('unread-badge preview-clickable p-badge-warning'),
+													A2(
+													$elm$html$Html$Events$stopPropagationOn,
+													'click',
+													$elm$json$Json$Decode$succeed(
+														_Utils_Tuple2(
+															$author$project$Main$HighlightColors(
+																_List_fromArray(
+																	[colors.warning200, colors.warning800])),
+															true)))
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('!')
+												]))
+										]))
+								]))
+						])),
+					A2(
+					$elm$html$Html$div,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('chat-main p-main-bg'),
 							A2(
 							$elm$html$Html$Events$stopPropagationOn,
 							'click',
 							$elm$json$Json$Decode$succeed(
 								_Utils_Tuple2(
-									$author$project$Main$HighlightColors(colorList),
+									$author$project$Main$HighlightColors(
+										_List_fromArray(
+											[mainBg])),
 									true)))
 						]),
-					attrs),
-				children);
-		});
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('chat-preview dark'),
-				$elm$html$Html$Events$onClick($author$project$Main$ClearHighlight)
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('chat-sidebar'),
-						A2($elm$html$Html$Attributes$style, 'background-color', colors.primary800),
-						A2(
-						$elm$html$Html$Events$stopPropagationOn,
-						'click',
-						$elm$json$Json$Decode$succeed(
-							_Utils_Tuple2(
-								$author$project$Main$HighlightColors(
+					_List_fromArray(
+						[
+							A3(
+							clickable,
+							_List_fromArray(
+								[mainBg, headerText]),
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-header p-header-border')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$span,
 									_List_fromArray(
-										[colors.primary800])),
-								true)))
-					]),
-				_List_fromArray(
-					[
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.primary800, colors.gray0]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-workspace')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Workspace')
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-user')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$span,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('status-dot preview-clickable'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.success500),
-												A2(
-												$elm$html$Html$Events$stopPropagationOn,
-												'click',
-												$elm$json$Json$Decode$succeed(
-													_Utils_Tuple2(
-														$author$project$Main$HighlightColors(
-															_List_fromArray(
-																[colors.success500])),
-														true)))
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$span,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.primary200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('You')
-											]))
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-nav')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-nav-item'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Inbox')
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-nav-item'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Starred')
-									]))
-							])),
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.primary800, colors.primary300]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-channels-label'),
-								A2($elm$html$Html$Attributes$style, 'color', colors.primary300)
-							]),
-						_List_fromArray(
-							[
-								$elm$html$Html$text('CHANNELS')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-channels')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary900, colors.gray0]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-channel selected'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.primary900),
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray0)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# design')
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-channel'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# engineering'),
-										A2(
-										$elm$html$Html$span,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('unread-badge preview-clickable'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.danger500),
-												A2($elm$html$Html$Attributes$style, 'color', colors.gray0),
-												A2(
-												$elm$html$Html$Events$stopPropagationOn,
-												'click',
-												$elm$json$Json$Decode$succeed(
-													_Utils_Tuple2(
-														$author$project$Main$HighlightColors(
-															_List_fromArray(
-																[colors.danger500, colors.gray0])),
-														true)))
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('4')
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.primary800, colors.primary100]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-channel'),
-										A2($elm$html$Html$Attributes$style, 'color', colors.primary100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# marketing')
-									]))
-							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$class('chat-main'),
-						A2($elm$html$Html$Attributes$style, 'background-color', colors.gray900),
-						A2(
-						$elm$html$Html$Events$stopPropagationOn,
-						'click',
-						$elm$json$Json$Decode$succeed(
-							_Utils_Tuple2(
-								$author$project$Main$HighlightColors(
+										[
+											$elm$html$Html$Attributes$class('p-header-text')
+										]),
 									_List_fromArray(
-										[colors.gray900])),
-								true)))
-					]),
-				_List_fromArray(
-					[
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.gray900, colors.gray100]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-header'),
-								A2($elm$html$Html$Attributes$style, 'border-color', colors.gray700)
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray100)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('# design')
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-alerts')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.danger900, colors.danger200]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-alert'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.danger900),
-										A2($elm$html$Html$Attributes$style, 'border-color', colors.danger800)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('alert-icon'),
-												A2($elm$html$Html$Attributes$style, 'color', colors.danger200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('✕')
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.danger200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Upload failed. Please try again.')
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.warning900, colors.warning200]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-alert'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.warning900),
-										A2($elm$html$Html$Attributes$style, 'border-color', colors.warning800)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('alert-icon'),
-												A2($elm$html$Html$Attributes$style, 'color', colors.warning200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('!')
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.warning200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Connection unstable.')
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.success900, colors.success200]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-alert'),
-										A2($elm$html$Html$Attributes$style, 'background-color', colors.success900),
-										A2($elm$html$Html$Attributes$style, 'border-color', colors.success800)
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('alert-icon'),
-												A2($elm$html$Html$Attributes$style, 'color', colors.success200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('✓')
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												A2($elm$html$Html$Attributes$style, 'color', colors.success200)
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Message sent successfully.')
-											]))
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-messages')
-							]),
-						_List_fromArray(
-							[
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.gray900, colors.gray300]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-message')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-avatar'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.primary400)
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-content')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-header')
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-author'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray100)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Sarah Porter')
-															])),
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-time'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray500)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('12:48 PM')
-															]))
-													])),
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-text'),
-														A2($elm$html$Html$Attributes$style, 'color', colors.gray300)
-													]),
-												_List_fromArray(
-													[
-														$elm$html$Html$text('No problem! I\'ll upload the notes shortly.')
-													]))
-											]))
-									])),
-								A3(
-								clickable,
-								_List_fromArray(
-									[colors.gray900, colors.gray300]),
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('chat-message')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-avatar'),
-												A2($elm$html$Html$Attributes$style, 'background-color', colors.gray600)
-											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('message-content')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-header')
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-author'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray100)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Tiffany Myers')
-															])),
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('message-time'),
-																A2($elm$html$Html$Attributes$style, 'color', colors.gray500)
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('12:51 PM')
-															]))
-													])),
-												A2(
-												$elm$html$Html$div,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('message-text'),
-														A2($elm$html$Html$Attributes$style, 'color', colors.gray300)
-													]),
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$span,
-														_List_fromArray(
-															[
-																A2($elm$html$Html$Attributes$style, 'color', colors.primary400),
-																$elm$html$Html$Attributes$class('preview-clickable'),
-																A2(
-																$elm$html$Html$Events$stopPropagationOn,
-																'click',
-																$elm$json$Json$Decode$succeed(
-																	_Utils_Tuple2(
-																		$author$project$Main$HighlightColors(
-																			_List_fromArray(
-																				[colors.primary400])),
-																		true)))
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('@sarah ')
-															])),
-														$elm$html$Html$text('I put the photos in the shared folder.')
-													]))
-											]))
-									]))
-							])),
-						A3(
-						clickable,
-						_List_fromArray(
-							[colors.gray800, colors.gray500]),
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('chat-input'),
-								A2($elm$html$Html$Attributes$style, 'background-color', colors.gray800),
-								A2($elm$html$Html$Attributes$style, 'border-color', colors.gray700)
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										A2($elm$html$Html$Attributes$style, 'color', colors.gray500)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Type your message...')
-									]))
-							]))
-					]))
-			]));
-};
+										[
+											$elm$html$Html$text('# design')
+										]))
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-alerts')
+								]),
+							_List_fromArray(
+								[
+									A3(
+									clickable,
+									_List_fromArray(
+										[dangerBg, dangerText]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-alert p-alert-danger')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('alert-icon p-danger-text')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('✕')
+												])),
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('p-danger-text')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Upload failed. Please try again.')
+												]))
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[warningBg, warningText]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-alert p-alert-warning')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('alert-icon p-warning-text')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('!')
+												])),
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('p-warning-text')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Connection unstable.')
+												]))
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[successBg, successText]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-alert p-alert-success')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('alert-icon p-success-text')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('✓')
+												])),
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('p-success-text')
+												]),
+											_List_fromArray(
+												[
+													$elm$html$Html$text('Message sent successfully.')
+												]))
+										]))
+								])),
+							A2(
+							$elm$html$Html$div,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-messages')
+								]),
+							_List_fromArray(
+								[
+									A3(
+									clickable,
+									_List_fromArray(
+										[mainBg, messageText]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-message')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('message-avatar p-avatar-primary')
+												]),
+											_List_Nil),
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('message-content')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('message-header')
+														]),
+													_List_fromArray(
+														[
+															A2(
+															$elm$html$Html$span,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('message-author p-message-author')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Sarah Porter')
+																])),
+															A2(
+															$elm$html$Html$span,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('message-time p-message-time')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('12:48 PM')
+																]))
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('message-text p-message-text')
+														]),
+													_List_fromArray(
+														[
+															$elm$html$Html$text('No problem! I\'ll upload the notes shortly.')
+														]))
+												]))
+										])),
+									A3(
+									clickable,
+									_List_fromArray(
+										[mainBg, messageText]),
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('chat-message')
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('message-avatar p-avatar-secondary')
+												]),
+											_List_Nil),
+											A2(
+											$elm$html$Html$div,
+											_List_fromArray(
+												[
+													$elm$html$Html$Attributes$class('message-content')
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('message-header')
+														]),
+													_List_fromArray(
+														[
+															A2(
+															$elm$html$Html$span,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('message-author p-message-author')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Tiffany Myers')
+																])),
+															A2(
+															$elm$html$Html$span,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('message-time p-message-time')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('12:51 PM')
+																]))
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('message-text p-message-text')
+														]),
+													_List_fromArray(
+														[
+															A2(
+															$elm$html$Html$span,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('preview-clickable p-mention'),
+																	A2(
+																	$elm$html$Html$Events$stopPropagationOn,
+																	'click',
+																	$elm$json$Json$Decode$succeed(
+																		_Utils_Tuple2(
+																			$author$project$Main$HighlightColors(
+																				_List_fromArray(
+																					[mentionColor])),
+																			true)))
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('@sarah ')
+																])),
+															$elm$html$Html$text('I put the photos in the shared folder.')
+														]))
+												]))
+										]))
+								])),
+							A3(
+							clickable,
+							_List_fromArray(
+								[inputBg, inputText]),
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('chat-input p-input')
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$span,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('p-input-text')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Type your message...')
+										]))
+								]))
+						]))
+				]));
+	});
 var $elm$html$Html$code = _VirtualDom_node('code');
 var $elm$core$String$replace = F3(
 	function (before, after, string) {
@@ -7415,7 +6911,6 @@ var $elm$html$Html$Attributes$href = function (url) {
 		'href',
 		_VirtualDom_noJavaScriptUri(url));
 };
-var $elm$html$Html$p = _VirtualDom_node('p');
 var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $author$project$Main$viewHeader = A2(
 	$elm$html$Html$header,
@@ -7489,6 +6984,8 @@ var $author$project$Main$OpenShadeEditor = F3(
 var $author$project$Main$activeClass = function (isActive) {
 	return isActive ? ' active' : '';
 };
+var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
+var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$html$Html$Attributes$title = $elm$html$Html$Attributes$stringProperty('title');
 var $author$project$Main$viewCompactShade = F6(
 	function (scaleName, shades, activeLevel, canEdit, highlightedColors, level) {
@@ -8258,51 +7755,70 @@ var $author$project$Main$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('previews-row')
+								$elm$html$Html$Attributes$class('previews-section')
 							]),
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$div,
+								$elm$html$Html$p,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('preview-section')
+										$elm$html$Html$Attributes$class('preview-hint')
 									]),
 								_List_fromArray(
 									[
-										A2(
-										$elm$html$Html$h3,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('preview-label')
-											]),
-										_List_fromArray(
-											[
-												$elm$html$Html$text('Light Mode')
-											])),
-										$author$project$Main$viewChatPreview(model),
-										A2($author$project$Main$viewButtonPreview, model, false)
+										$elm$html$Html$text('Click on any element to highlight its colors in the palette above.')
 									])),
 								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$class('preview-section')
+										$elm$html$Html$Attributes$class('previews-row')
 									]),
 								_List_fromArray(
 									[
 										A2(
-										$elm$html$Html$h3,
+										$elm$html$Html$div,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$class('preview-label')
+												$elm$html$Html$Attributes$class('preview-section')
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('Dark Mode')
+												A2(
+												$elm$html$Html$h3,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('preview-label')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Light Mode')
+													])),
+												A2($author$project$Main$viewChatPreview, model, false),
+												A2($author$project$Main$viewButtonPreview, model, false)
 											])),
-										$author$project$Main$viewChatPreviewDark(model),
-										A2($author$project$Main$viewButtonPreview, model, true)
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('preview-section')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$h3,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('preview-label')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Dark Mode')
+													])),
+												A2($author$project$Main$viewChatPreview, model, true),
+												A2($author$project$Main$viewButtonPreview, model, true)
+											]))
 									]))
 							]))
 					])),
